@@ -40,6 +40,8 @@ class AppBarShopingCart extends StatelessWidget {
           });
         }
       },
+
+      //tess
       icon: Badgenya.Badge(
         badgeAnimation: Badgenya.BadgeAnimation.fade(
             animationDuration: Duration(milliseconds: 300)),
