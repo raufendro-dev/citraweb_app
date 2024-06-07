@@ -57,6 +57,10 @@ class _ContentProdukState extends State<ContentProduk>
 
     final responseProduk = await http.get(Uri.parse(Config.baseUrlApi +
         'app-api/produk/?key=0cc7da679bea04fea453c8062e06514d$page'));
+    print("rauf");
+    print(Config.baseUrlApi.toString() +
+        'app-api/produk/?key=0cc7da679bea04fea453c8062e06514d' +
+        page);
     if (responseProduk.statusCode == 200) {
       print('fetchProduk');
       final Map produk = jsonDecode(responseProduk.body);
@@ -91,6 +95,8 @@ class _ContentProdukState extends State<ContentProduk>
     }
   }
 
+  var cekscroll = false;
+
   @override
   void initState() {
     super.initState();
@@ -107,7 +113,10 @@ class _ContentProdukState extends State<ContentProduk>
       onRefresh: _refresh,
       child: Column(
         children: [
-          HomeSilder(futureBanner: futureBanner, controller: _controllerBanner),
+          // cekscroll == false
+          //     ?
+          // HomeSilder(futureBanner: futureBanner, controller: _controllerBanner),
+          //     : Container(),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
@@ -116,6 +125,45 @@ class _ContentProdukState extends State<ContentProduk>
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return NotificationListener<ScrollEndNotification>(
+                      // return NotificationListener<ScrollNotification>(
+                      //   onNotification: (notification) {
+                      //     if (notification is ScrollStartNotification) {
+                      //       // Handle scroll start
+                      //       print('Scroll started');
+                      //     } else if (notification is ScrollUpdateNotification) {
+                      //       // Handle scroll update
+                      //       print('Scroll updated');
+                      //       if (notification.metrics.pixels <=
+                      //           notification.metrics.minScrollExtent) {
+                      //         setState(() {
+                      //           cekscroll = false;
+                      //         });
+                      //       } else {
+                      //         setState(() {
+                      //           cekscroll = true;
+                      //         });
+                      //       }
+                      //     } else if (notification is ScrollEndNotification) {
+                      //       // Handle scroll end
+                      //       print('Scroll ended');
+                      //       if (notification.metrics.pixels ==
+                      //           notification.metrics.maxScrollExtent) {
+                      //         if (curentPage < totalPage) {
+                      //           setState(() {
+                      //             futureProduk = fetchProduk(
+                      //               loadMore: true,
+                      //               listLama: snapshot.data!,
+                      //             );
+                      //           });
+                      //         }
+                      //         print(curentPage);
+                      //         return true;
+                      //       } else {
+                      //         return false;
+                      //       }
+                      //     }
+                      //     return true;
+                      //   },
                       onNotification: (ScrollEndNotification scrollInfo) {
                         if (scrollInfo.metrics.pixels ==
                             scrollInfo.metrics.maxScrollExtent) {
@@ -134,6 +182,7 @@ class _ContentProdukState extends State<ContentProduk>
                         }
                       },
                       child: GridView.count(
+                        // shrinkWrap: true,
                         padding: const EdgeInsets.symmetric(vertical: 4),
                         crossAxisCount: 2,
                         mainAxisSpacing: 3,
@@ -242,11 +291,54 @@ class _ContentProdukState extends State<ContentProduk>
                                                           .onError),
                                                 ),
                                               ),
+                                            ),
+                                          if (snapshot.data![index]
+                                                  ['status_barang'] ==
+                                              'INDEN')
+                                            Positioned(
+                                              top: 2,
+                                              right: 1,
+                                              child: Container(
+                                                color: Colors.blue,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 2),
+                                                child: Text(
+                                                  snapshot.data![index]
+                                                      ['status_barang'],
+                                                  style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onError),
+                                                ),
+                                              ),
+                                            ),
+                                          if (snapshot.data![index]
+                                                  ['status_barang'] ==
+                                              "CALL TO BUY")
+                                            Positioned(
+                                              top: 2,
+                                              right: 1,
+                                              child: Container(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 2),
+                                                child: Text(
+                                                  "Call to buy",
+                                                  style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onError),
+                                                ),
+                                              ),
                                             )
                                         ]),
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0, vertical: 4),
+                                              horizontal: 8.0, vertical: 3),
                                           child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.stretch,
@@ -277,20 +369,27 @@ class _ContentProdukState extends State<ContentProduk>
                                               const SizedBox(
                                                 height: 4,
                                               ),
-                                              Text(
-                                                snapshot.data![index]
-                                                        ['harga_rp']
-                                                    .replaceAll(',00', ''),
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyText2!
-                                                    .copyWith(
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .error),
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 1,
-                                              ),
+                                              snapshot.data![index]
+                                                          ['harga_rp'] !=
+                                                      "0"
+                                                  ? Text(
+                                                      snapshot.data![index]
+                                                              ['harga_rp']
+                                                          .replaceAll(
+                                                              ',00', ''),
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyText2!
+                                                          .copyWith(
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .error),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      maxLines: 1,
+                                                    )
+                                                  : Container()
                                             ],
                                           ),
                                         ),

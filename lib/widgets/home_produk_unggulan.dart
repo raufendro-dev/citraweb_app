@@ -309,6 +309,46 @@ class HomeProdukUnggulan extends StatelessWidget {
                                                   .onError),
                                         ),
                                       ),
+                                    ),
+                                  if (snapshot.data![index]['status_barang'] ==
+                                      'INDEN')
+                                    Positioned(
+                                      top: 2,
+                                      right: 1,
+                                      child: Container(
+                                        color: Colors.blue,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 2),
+                                        child: Text(
+                                          snapshot.data![index]
+                                              ['status_barang'],
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onError),
+                                        ),
+                                      ),
+                                    ),
+                                  if (snapshot.data![index]['status_barang'] ==
+                                      'CALL TO BUY')
+                                    Positioned(
+                                      top: 2,
+                                      right: 1,
+                                      child: Container(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 2),
+                                        child: Text(
+                                          snapshot.data![index]
+                                              ['status_barang'],
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onError),
+                                        ),
+                                      ),
                                     )
                                 ]),
                                 Padding(
@@ -342,19 +382,21 @@ class HomeProdukUnggulan extends StatelessWidget {
                                       const SizedBox(
                                         height: 4,
                                       ),
-                                      Text(
-                                        snapshot.data![index]['harga_rp']
-                                            .replaceAll(',00', ''),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyText2!
-                                            .copyWith(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .error),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                      ),
+                                      snapshot.data![index]['harga_rp'] != "0"
+                                          ? Text(
+                                              snapshot.data![index]['harga_rp']
+                                                  .replaceAll(',00', ''),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText2!
+                                                  .copyWith(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .error),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                            )
+                                          : Container()
                                     ],
                                   ),
                                 ),

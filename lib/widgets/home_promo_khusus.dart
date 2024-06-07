@@ -153,20 +153,22 @@ class HomePromoKhusus extends StatelessWidget {
                                                   maxLines: 1,
                                                 ),
                                                 const SizedBox(height: 6),
-                                                Text(
-                                                  produk['harga_rp'],
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyText2!
-                                                      .copyWith(
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .secondary),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  maxLines: 1,
-                                                ),
+                                                produk['harga_rp'] != "0"
+                                                    ? Text(
+                                                        produk['harga_rp'],
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyText2!
+                                                            .copyWith(
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .secondary),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        maxLines: 1,
+                                                      )
+                                                    : Container()
                                               ],
                                             ),
                                           ),
@@ -181,6 +183,42 @@ class HomePromoKhusus extends StatelessWidget {
                                       child: Container(
                                         color:
                                             Theme.of(context).colorScheme.error,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 2),
+                                        child: Text(
+                                          produk['status_barang'],
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onError),
+                                        ),
+                                      ),
+                                    ),
+                                  if (produk['status_barang'] == 'INDEN')
+                                    Positioned(
+                                      top: 6,
+                                      left: 12,
+                                      child: Container(
+                                        color: Colors.blue,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 2),
+                                        child: Text(
+                                          produk['status_barang'],
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onError),
+                                        ),
+                                      ),
+                                    ),
+                                  if (produk['status_barang'] == 'CALL TO BUY')
+                                    Positioned(
+                                      top: 6,
+                                      left: 12,
+                                      child: Container(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 2),
                                         child: Text(

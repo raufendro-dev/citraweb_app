@@ -183,7 +183,8 @@ class _BuilderTrainingState extends State<BuilderTraining>
                   );
                 });
           }
-          return const Center(child: CircularProgressIndicator());
+          // return const Center(child: CircularProgressIndicator());
+          return const Center(child: Text("Tidak ada training"));
         });
   }
 

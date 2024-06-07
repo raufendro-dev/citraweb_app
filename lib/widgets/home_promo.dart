@@ -150,22 +150,30 @@ class HomePromo extends StatelessWidget {
                                             child: AspectRatio(
                                               aspectRatio: 1,
                                               child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                                child: CachedNetworkImage(
-                                                  imageUrl: _config.mktToCst(
-                                                      produk['gambar_kecil']),
-                                                  placeholder: (context, url) =>
-                                                      const Center(
-                                                          child:
-                                                              CircularProgressIndicator(
-                                                    strokeWidth: 2,
-                                                  )),
-                                                  errorWidget: (context, url,
-                                                          error) =>
-                                                      const Icon(Icons.error),
-                                                ),
-                                              ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                  child:
+                                                      produk['gambar_kecil'] !=
+                                                              null
+                                                          ? CachedNetworkImage(
+                                                              imageUrl: _config
+                                                                  .mktToCst(produk[
+                                                                      'gambar_kecil']),
+                                                              placeholder: (context,
+                                                                      url) =>
+                                                                  const Center(
+                                                                      child:
+                                                                          CircularProgressIndicator(
+                                                                strokeWidth: 2,
+                                                              )),
+                                                              errorWidget: (context,
+                                                                      url,
+                                                                      error) =>
+                                                                  const Icon(Icons
+                                                                      .error),
+                                                            )
+                                                          : Container()),
                                             ),
                                           ),
                                           Expanded(
@@ -178,20 +186,23 @@ class HomePromo extends StatelessWidget {
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.center,
                                                 children: [
-                                                  Text(
-                                                    produk['nama'],
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .bodyText2!
-                                                        .copyWith(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .colorScheme
-                                                                .primary),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    maxLines: 1,
-                                                  ),
+                                                  produk['nama'] != null
+                                                      ? Text(
+                                                          produk['nama'],
+                                                          style: Theme.of(
+                                                                  context)
+                                                              .textTheme
+                                                              .bodyText2!
+                                                              .copyWith(
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .primary),
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          maxLines: 1,
+                                                        )
+                                                      : Container(),
                                                   const SizedBox(height: 6),
                                                   Text(
                                                     produk['kode'],
@@ -203,20 +214,23 @@ class HomePromo extends StatelessWidget {
                                                     maxLines: 1,
                                                   ),
                                                   const SizedBox(height: 6),
-                                                  Text(
-                                                    produk['harga_rp'],
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .bodyText2!
-                                                        .copyWith(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .colorScheme
-                                                                .secondary),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    maxLines: 1,
-                                                  ),
+                                                  produk['harga_rp'] != "0"
+                                                      ? Text(
+                                                          produk['harga_rp'],
+                                                          style: Theme.of(
+                                                                  context)
+                                                              .textTheme
+                                                              .bodyText2!
+                                                              .copyWith(
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .secondary),
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          maxLines: 1,
+                                                        )
+                                                      : Container(),
                                                 ],
                                               ),
                                             ),
@@ -232,6 +246,43 @@ class HomePromo extends StatelessWidget {
                                           color: Theme.of(context)
                                               .colorScheme
                                               .error,
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 2),
+                                          child: Text(
+                                            produk['status_barang'],
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onError),
+                                          ),
+                                        ),
+                                      ),
+                                    if (produk['status_barang'] ==
+                                        'CALL TO BUY')
+                                      Positioned(
+                                        top: 6,
+                                        left: 12,
+                                        child: Container(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 2),
+                                          child: Text(
+                                            produk['status_barang'],
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onError),
+                                          ),
+                                        ),
+                                      ),
+                                    if (produk['status_barang'] == 'IDEN')
+                                      Positioned(
+                                        top: 6,
+                                        left: 12,
+                                        child: Container(
+                                          color: Colors.blue,
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 2),
                                           child: Text(

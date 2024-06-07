@@ -7,7 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mikrotik/services/auth_service.dart';
 import 'package:mikrotik/widgets/app_bar_home.dart';
 // import 'package:provider/provider.dart';
-
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mikrotik/widgets/content_artikel.dart';
 import 'package:mikrotik/widgets/content_profile.dart';
 import 'package:mikrotik/widgets/content_training.dart';
@@ -15,6 +15,7 @@ import 'package:mikrotik/widgets/end_drawer_home.dart';
 import '../widgets/content_beranda.dart';
 import '../widgets/content_produk.dart';
 import '../constant/custom_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePageScreen extends StatefulWidget {
   const HomePageScreen({Key? key, required this.title}) : super(key: key);
@@ -140,6 +141,15 @@ class _HomePageScreenState extends State<HomePageScreen>
             children: pageOption,
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        icon: FaIcon(FontAwesomeIcons.whatsapp),
+        label: Text("Tanya Kami"),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        onPressed: () {
+          String url = "https://wa.me/+628112039555/?text=Halo, Citraweb";
+          launch(url);
+        },
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -69,6 +70,7 @@ class _DetailProductScreenState extends State<DetailProductScreen>
     return false;
   }
 
+  var namabuatwa = "";
   Future<List<Map<String, dynamic>>> fetchProdukDetail() async {
     return Future.delayed(const Duration(milliseconds: 250), () async {
       final List<Map<String, dynamic>> listProdukDetail = [];
@@ -81,6 +83,9 @@ class _DetailProductScreenState extends State<DetailProductScreen>
           for (var detail in produkDetail['data']) {
             listProdukDetail.add(detail);
           }
+          setState(() {
+            namabuatwa = produkDetail['data'][0]['nama'].toString();
+          });
         }
       } else {
         print('Failed to load Detail Produk');
@@ -125,6 +130,18 @@ class _DetailProductScreenState extends State<DetailProductScreen>
     super.build(context);
     print('build detail page');
     return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        icon: FaIcon(FontAwesomeIcons.whatsapp),
+        label: Text("Tanya Kami"),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        onPressed: () {
+          print(namabuatwa);
+          String url =
+              "https://wa.me/+628112039555/?text=Halo, Saya mau menanyakan tentang produk " +
+                  namabuatwa;
+          launch(url);
+        },
+      ),
       appBar: const AppBarHome(
         leading: Leading.back,
       ),
@@ -232,15 +249,18 @@ class _DetailProductScreenState extends State<DetailProductScreen>
                         const SizedBox(
                           height: 6,
                         ),
-                        Text(
-                          detail['harga_rp'].replaceAll(',00', ''),
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline6!
-                              .copyWith(color: Theme.of(context).primaryColor),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
+                        detail['harga_rp'] != "0"
+                            ? Text(
+                                detail['harga_rp'].replaceAll(',00', ''),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline6!
+                                    .copyWith(
+                                        color: Theme.of(context).primaryColor),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              )
+                            : Container(),
                         const SizedBox(
                           height: 6,
                         ),
@@ -649,6 +669,52 @@ class _DetailProductScreenState extends State<DetailProductScreen>
                                                                 .onError),
                                                       ),
                                                     ),
+                                                  ),
+                                                if (snapshot.data![index]
+                                                        ['status_barang'] ==
+                                                    'INDEN')
+                                                  Positioned(
+                                                    top: 2,
+                                                    right: 1,
+                                                    child: Container(
+                                                      color: Colors.blue,
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          horizontal: 2),
+                                                      child: Text(
+                                                        snapshot.data![index]
+                                                            ['status_barang'],
+                                                        style: TextStyle(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .onError),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                if (snapshot.data![index]
+                                                        ['status_barang'] ==
+                                                    'CALL TO BUY')
+                                                  Positioned(
+                                                    top: 2,
+                                                    right: 1,
+                                                    child: Container(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          horizontal: 2),
+                                                      child: Text(
+                                                        snapshot.data![index]
+                                                            ['status_barang'],
+                                                        style: TextStyle(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .onError),
+                                                      ),
+                                                    ),
                                                   )
                                               ]),
                                               Padding(
@@ -692,23 +758,30 @@ class _DetailProductScreenState extends State<DetailProductScreen>
                                                     const SizedBox(
                                                       height: 4,
                                                     ),
-                                                    Text(
-                                                      snapshot.data![index]
-                                                              ['harga_rp']
-                                                          .replaceAll(
-                                                              ',00', ''),
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText2!
-                                                          .copyWith(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .colorScheme
-                                                                  .error),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      maxLines: 1,
-                                                    ),
+                                                    snapshot.data![index]
+                                                                ['harga_rp'] !=
+                                                            "0"
+                                                        ? Text(
+                                                            snapshot
+                                                                .data![index]
+                                                                    ['harga_rp']
+                                                                .replaceAll(
+                                                                    ',00', ''),
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .bodyText2!
+                                                                .copyWith(
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .error),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            maxLines: 1,
+                                                          )
+                                                        : Container()
                                                   ],
                                                 ),
                                               ),
@@ -771,40 +844,50 @@ class _DetailProductScreenState extends State<DetailProductScreen>
                                           .data!.first['status_barang'] ==
                                       'HABIS'
                                   ? null
-                                  : () async {
-                                      print(await authService.strDataLogin);
-                                      if (await authService.cekLogin(context)) {
-                                        print('addtocart');
-                                        // addtocart
-                                        if (await addToCart()) {
-                                          cartProvider.plushItem();
-                                          authService.fetchCart(context);
-                                          print(cartProvider.jumlahItem);
-                                        }
-                                      } else {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute<void>(
-                                              builder: (BuildContext context) =>
-                                                  LoginScreen(),
-                                            )).then((value) async {
-                                          if ((await authService.strDataLogin)
-                                              .toString()
-                                              .isNotEmpty) {
-                                            addToCart();
-                                            cartProvider.plushItem();
-                                            Navigator.of(context)
-                                                .pushNamedAndRemoveUntil(
-                                                    HomePageScreen.routeName,
-                                                    (Route<dynamic> route) =>
-                                                        false);
+                                  : snapshot.data!.first['status_barang'] ==
+                                          'CALL TO BUY'
+                                      ? null
+                                      : () async {
+                                          print(await authService.strDataLogin);
+                                          if (await authService
+                                              .cekLogin(context)) {
+                                            print('addtocart');
+                                            // addtocart
+                                            if (await addToCart()) {
+                                              cartProvider.plushItem();
+                                              authService.fetchCart(context);
+                                              print(cartProvider.jumlahItem);
+                                            }
+                                          } else {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute<void>(
+                                                  builder:
+                                                      (BuildContext context) =>
+                                                          LoginScreen(),
+                                                )).then((value) async {
+                                              if ((await authService
+                                                      .strDataLogin)
+                                                  .toString()
+                                                  .isNotEmpty) {
+                                                addToCart();
+                                                cartProvider.plushItem();
+                                                Navigator.of(context)
+                                                    .pushNamedAndRemoveUntil(
+                                                        HomePageScreen
+                                                            .routeName,
+                                                        (Route<dynamic>
+                                                                route) =>
+                                                            false);
 
-                                            Navigator.pushNamed(context,
-                                                ShopingCartScreen.routeName);
+                                                Navigator.pushNamed(
+                                                    context,
+                                                    ShopingCartScreen
+                                                        .routeName);
+                                              }
+                                            });
                                           }
-                                        });
-                                      }
-                                    },
+                                        },
                               child: const Icon(Icons.add_shopping_cart)),
                         ),
                         Expanded(
@@ -823,57 +906,69 @@ class _DetailProductScreenState extends State<DetailProductScreen>
                                           .data!.first['status_barang'] ==
                                       'HABIS'
                                   ? null
-                                  : () async {
-                                      print('belisekarang');
-                                      print(await authService.strDataLogin);
-                                      if (await authService.cekLogin(context)) {
-                                        // addtocart
-                                        // addToCart();
-                                        if (await addToCart()) {
-                                          // authService.fetchCart(context).then(
-                                          //   (value) {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute<void>(
-                                                builder: (BuildContext
-                                                        context) =>
-                                                    const ShopingCartScreen(),
-                                              ));
-                                          //   return value;
-                                          // },
-                                          // );
-                                          cartProvider.plushItem();
-                                          // print(cartProvider.jumlahItem);
+                                  : snapshot.data!.first['status_barang'] ==
+                                          'CALL TO BUY'
+                                      ? null
+                                      : () async {
+                                          print('belisekarang');
+                                          print(await authService.strDataLogin);
+                                          if (await authService
+                                              .cekLogin(context)) {
+                                            // addtocart
+                                            // addToCart();
+                                            if (await addToCart()) {
+                                              // authService.fetchCart(context).then(
+                                              //   (value) {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute<void>(
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        const ShopingCartScreen(),
+                                                  ));
+                                              //   return value;
+                                              // },
+                                              // );
+                                              cartProvider.plushItem();
+                                              // print(cartProvider.jumlahItem);
+                                            }
+                                          } else {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute<void>(
+                                                  builder:
+                                                      (BuildContext context) =>
+                                                          LoginScreen(),
+                                                )).then((value) async {
+                                              if ((await authService
+                                                      .strDataLogin)
+                                                  .toString()
+                                                  .isNotEmpty) {
+                                                addToCart();
+                                                cartProvider.plushItem();
+                                                Navigator.of(context)
+                                                    .pushNamedAndRemoveUntil(
+                                                        HomePageScreen
+                                                            .routeName,
+                                                        (Route<dynamic>
+                                                                route) =>
+                                                            false);
 
-                                        }
-                                      } else {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute<void>(
-                                              builder: (BuildContext context) =>
-                                                  LoginScreen(),
-                                            )).then((value) async {
-                                          if ((await authService.strDataLogin)
-                                              .toString()
-                                              .isNotEmpty) {
-                                            addToCart();
-                                            cartProvider.plushItem();
-                                            Navigator.of(context)
-                                                .pushNamedAndRemoveUntil(
-                                                    HomePageScreen.routeName,
-                                                    (Route<dynamic> route) =>
-                                                        false);
-
-                                            Navigator.pushNamed(context,
-                                                ShopingCartScreen.routeName);
+                                                Navigator.pushNamed(
+                                                    context,
+                                                    ShopingCartScreen
+                                                        .routeName);
+                                              }
+                                            });
                                           }
-                                        });
-                                      }
-                                    },
+                                        },
                               child: Text(
                                 snapshot.data!.first['status_barang'] == 'HABIS'
                                     ? 'Stok Habis'
-                                    : 'Beli Sekarang',
+                                    : snapshot.data!.first['status_barang'] ==
+                                            'CALL TO BUY'
+                                        ? "Call to buy"
+                                        : 'Beli Sekarang',
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyText1!

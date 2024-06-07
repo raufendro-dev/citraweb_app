@@ -52,7 +52,7 @@ class _ContentBerandaState extends State<ContentBeranda>
 
   Future<List<String>> fetchInfo() async {
     // return Future.delayed(const Duration(seconds: 1), () async {
-    final List<String> listInfo = [];
+    List<String> listInfo = [];
 
     final responseInfo = await http.get(Uri.parse(Config.baseUrlApi +
         'app-api/depan/?key=0cc7da679bea04fea453c8062e06514d'));
@@ -63,8 +63,12 @@ class _ContentBerandaState extends State<ContentBeranda>
           listInfo.add(infoItem['msg']);
         }
       }
+      print("rauf tes1 ");
+      print(responseInfo.body);
     } else {
+      print("rauf tes2");
       print('Failed to load Info');
+      return [];
     }
     return listInfo;
     // });
@@ -73,9 +77,13 @@ class _ContentBerandaState extends State<ContentBeranda>
   Future<List<Map<String, dynamic>>> fetchPromo() async {
     // return Future.delayed(const Duration(seconds: 2), () async {
     final List<Map<String, dynamic>> listPromo = [];
+    print("Jalan");
+    print(Config.baseUrlApi +
+        'app-api/depan/promo/?key=0cc7da679bea04fea453c8062e06514d');
 
     final responsePromo = await http.get(Uri.parse(Config.baseUrlApi +
         'app-api/depan/promo/?key=0cc7da679bea04fea453c8062e06514d'));
+
     if (responsePromo.statusCode == 200) {
       final Map promo = jsonDecode(responsePromo.body);
       if (promo['data'].isNotEmpty) {
@@ -85,6 +93,7 @@ class _ContentBerandaState extends State<ContentBeranda>
       }
     } else {
       print('Failed to load Promo');
+      return [];
     }
     return listPromo;
     // });
@@ -96,6 +105,9 @@ class _ContentBerandaState extends State<ContentBeranda>
 
       final responsePromoKhusus = await http.get(Uri.parse(Config.baseUrlApi +
           'app-api/depan/promohargakhusus/?key=0cc7da679bea04fea453c8062e06514d'));
+      print("rauf promokhusus");
+      print(Config.baseUrlApi +
+          'app-api/depan/promohargakhusus/?key=0cc7da679bea04fea453c8062e06514d');
       if (responsePromoKhusus.statusCode == 200) {
         final Map promoKhusus = jsonDecode(responsePromoKhusus.body);
         if (promoKhusus['data'].isNotEmpty) {
@@ -105,6 +117,7 @@ class _ContentBerandaState extends State<ContentBeranda>
         }
       } else {
         print('Failed to load Promo Khusus');
+        return [];
       }
       return listPromoKhusus;
     });
@@ -125,6 +138,7 @@ class _ContentBerandaState extends State<ContentBeranda>
         }
       } else {
         print('Failed to load Produk Baru');
+        return [];
       }
       return listProdukBaru;
     });
@@ -147,6 +161,7 @@ class _ContentBerandaState extends State<ContentBeranda>
         }
       } else {
         print('Failed to load Produk Unggulan');
+        return [];
       }
       return listProdukUnggulan;
     });
@@ -182,17 +197,28 @@ class _ContentBerandaState extends State<ContentBeranda>
               indikator: true,
             ),
             HomeCategroy(),
-            HomeInfo(futureInfo: futureInfo),
-            HomePromo(futurePromo: futurePromo, createRoute: _createRoute),
-            HomePromoKhusus(
-                futurePromoKhusus: futurePromoKhusus,
-                createRoute: _createRoute),
-            HomeProdukBaru(
-                futureProdukBaru: futureProdukBaru, createRoute: _createRoute),
-            HomeProdukUnggulan(
-                futureProdukUnggulan: futureProdukUnggulan,
-                createRoute: _createRoute),
-            HomeCustomCategory(createRoute: _createRoute),
+            futureInfo != null || futureInfo != []
+                ? HomeInfo(futureInfo: futureInfo)
+                : Container(),
+            futurePromo != [] || futurePromo != null
+                ? HomePromo(futurePromo: futurePromo, createRoute: _createRoute)
+                : Container(),
+            futurePromoKhusus != null || futurePromoKhusus != []
+                ? HomePromoKhusus(
+                    futurePromoKhusus: futurePromoKhusus,
+                    createRoute: _createRoute)
+                : Container(),
+            futureProdukBaru != null || futureProdukBaru != []
+                ? HomeProdukBaru(
+                    futureProdukBaru: futureProdukBaru,
+                    createRoute: _createRoute)
+                : Container(),
+            futureProdukUnggulan != null || futureProdukUnggulan != []
+                ? HomeProdukUnggulan(
+                    futureProdukUnggulan: futureProdukUnggulan,
+                    createRoute: _createRoute)
+                : Container(),
+            HomeCustomCategory(createRoute: _createRoute)
           ],
         ),
       ),

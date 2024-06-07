@@ -49,6 +49,7 @@ class _ContentProfileState extends State<ContentProfile>
 
         // }
         profileObj = profil['data'].first;
+        print("tessss prof");
       }
     } else {
       print('Failed to load Profile');
@@ -776,7 +777,7 @@ class _ContentProfileState extends State<ContentProfile>
                             (Route<dynamic> route) => false,
                             arguments: 4,
                           );
-                        }
+                        } else {}
                       });
                     },
                     child: const Text('Login')),

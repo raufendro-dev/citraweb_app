@@ -71,22 +71,27 @@ class HomeCategroy extends StatelessWidget {
                                           horizontal: 10,
                                           vertical: 4,
                                         ),
-                                        child: AspectRatio(
-                                          aspectRatio: 1,
-                                          child: CachedNetworkImage(
-                                            imageUrl: listCategory[index * 2]
-                                                ['image'],
-                                            placeholder: (context, url) =>
-                                                const Center(
-                                                    child:
-                                                        CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                            )),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    const Icon(Icons.error),
-                                          ),
-                                        ),
+                                        child: listCategory[index * 2]
+                                                    ['image'] ==
+                                                ""
+                                            ? Container()
+                                            : AspectRatio(
+                                                aspectRatio: 1,
+                                                child: CachedNetworkImage(
+                                                  imageUrl:
+                                                      listCategory[index * 2]
+                                                          ['image'],
+                                                  placeholder: (context, url) =>
+                                                      const Center(
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                  )),
+                                                  errorWidget: (context, url,
+                                                          error) =>
+                                                      const Icon(Icons.error),
+                                                ),
+                                              ),
                                       ),
                                       SizedBox(
                                         height: 24,
