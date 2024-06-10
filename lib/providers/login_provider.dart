@@ -16,6 +16,18 @@ class LoginProvider extends InheritedWidget {
 
   static FormBloc of(BuildContext context) {
     // return (context.dependOnInheritedWidgetOfExactType<LoginProvider>() as LoginProvider).bloc;
-    return context.dependOnInheritedWidgetOfExactType<LoginProvider>()!.bloc;
+    // return context.dependOnInheritedWidgetOfExactType<LoginProvider>()!.bloc;
+    FormBloc? formBloc =
+        context.dependOnInheritedWidgetOfExactType<LoginProvider>()?.bloc;
+    if (formBloc != null) {
+      print("tes hahaha");
+      print(formBloc.toString());
+
+      // Use formBloc here
+      return formBloc;
+    } else {
+      throw Exception('LoginProvider not found in widget tree');
+      // Handle the case where LoginProvider is not found
+    }
   }
 }

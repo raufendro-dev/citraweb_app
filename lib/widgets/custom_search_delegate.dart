@@ -279,11 +279,46 @@ class _ResultPageState extends State<ResultPage>
                                           .onError),
                                 ),
                               ),
-                            )
+                            ),
+                          if (listProduk[index]['status_barang'] == 'INDEN')
+                            Positioned(
+                              top: 2,
+                              right: 1,
+                              child: Container(
+                                color: Colors.blue,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 2),
+                                child: Text(
+                                  listProduk[index]['status_barang'],
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onError),
+                                ),
+                              ),
+                            ),
+                          if (listProduk[index]['status_barang'] ==
+                              'CALL TO BUY')
+                            Positioned(
+                              top: 2,
+                              right: 1,
+                              child: Container(
+                                color: Theme.of(context).colorScheme.error,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 2),
+                                child: Text(
+                                  listProduk[index]['status_barang'],
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                ),
+                              ),
+                            ),
                         ]),
                         Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0, vertical: 4),
+                              horizontal: 8.0, vertical: 3),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [

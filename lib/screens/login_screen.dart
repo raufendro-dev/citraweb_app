@@ -22,9 +22,9 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final FormBloc formBloc = LoginProvider.of(context);
     print("tessss rrr");
-    print(formBloc);
+    final FormBloc formBloc = LoginProvider.of(context);
+    // print(formBloc);
 
     return Scaffold(
       body: Center(
