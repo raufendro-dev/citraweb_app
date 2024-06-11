@@ -1,6 +1,8 @@
 // ignore_for_file: avoid_print
 
 import 'dart:convert';
+import 'package:mikrotik/screens/register_screen_perusahaan.dart';
+
 import 'register_screen_personal.dart';
 
 import 'package:flutter_html/flutter_html.dart';
@@ -81,6 +83,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ));
                         } else if (selectedOption == "Perusahaan") {
                           print("perusahaan");
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (BuildContext context) =>
+                                    const RegisterPerusahaanScreen(),
+                              ));
                         }
                       },
                       child: Text("Lanjutkan"))

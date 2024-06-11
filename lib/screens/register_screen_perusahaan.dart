@@ -1,7 +1,8 @@
 // ignore_for_file: avoid_print
 
 import 'dart:convert';
-
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -11,15 +12,17 @@ import 'package:mikrotik/constant/config.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:mikrotik/services/auth_service.dart';
 import '../models/dropdown_model.dart';
+import 'dart:convert';
+import 'package:image/image.dart' as Img;
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+class RegisterPerusahaanScreen extends StatefulWidget {
+  const RegisterPerusahaanScreen({Key? key}) : super(key: key);
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<RegisterPerusahaanScreen> createState() => _RegisterPerusahaanScreen();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterPerusahaanScreen extends State<RegisterPerusahaanScreen> {
   final _keyDaftar = GlobalKey<FormState>();
 
   final controllerUsername = TextEditingController();
@@ -106,6 +109,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     var bodyPost = jsonEncode({
       "key": "0cc7da679bea04fea453c8062e06514d",
       "ip": await AuthService.getIPAddress(),
+      "tipe_akun": "2",
       "userid": controllerUsername.text,
       "password": controllerPassword.text,
       "password2": controllerUlangiPassword.text,
@@ -126,6 +130,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       "faxdaerah": controllerFaxDaerah.text,
       "fax": controllerFax.text,
       "url": controllerUrl.text,
+      "foto_npwp": "",
+      "tipefile": "",
     });
     print(bodyPost);
     var res = await http.post(
@@ -138,6 +144,75 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return jsonDecode(res.body)['data'].first;
     }
     return {"daftar": false, "msg": "Terjadi kesalahan saat pendaftaran"};
+  }
+
+  void showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible:
+          false, // Prevent user from dismissing by tapping outside
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            padding: EdgeInsets.all(20),
+            child: Row(
+              mainAxisSize: MainAxisSize.min, // Center content horizontally
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 10),
+                Text('Loading...'),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  File? _image;
+
+  // Function to pick image from gallery
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.getImage(
+      source: ImageSource.gallery,
+      imageQuality: 70, // Set the image quality here (0 to 100)
+    );
+    setState(() {
+      if (pickedImage != null) {
+        _image = File(pickedImage.path);
+        try {
+          // Get file format
+          final Img.Image? image = Img.decodeImage(_image!.readAsBytesSync());
+          if (image != null) {
+            String imageType = _getImageType(_image!.path);
+            print('Image type: $imageType');
+
+            // Compress image while maintaining aspect ratio
+            Img.Image compressedImage =
+                Img.copyResize(image, width: 800); // Adjust the width as needed
+
+            // Convert image to base64
+            List<int> imageBytes = Img.encodeJpg(
+                compressedImage); // Convert to JPG format to reduce size
+            String base64Image = 'data:image/jpeg;base64,' +
+                base64Encode(imageBytes); // Prepend the data URI format
+            print('Base64 image: $base64Image');
+
+            // Proceed with the compressed and encoded image...
+          }
+        } catch (e) {
+          print('Error: $e');
+        }
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  String _getImageType(String imagePath) {
+    String type = imagePath.split('.').last.toLowerCase();
+    return type;
   }
 
   @override
@@ -610,8 +685,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      ElevatedButton(
+                        onPressed: _pickImage,
+                        child: Text('Foto NPWP'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
                   ElevatedButton(
                       onPressed: () {
+                        showLoadingDialog();
                         FocusScope.of(context).unfocus();
                         if (_keyDaftar.currentState!.validate()) {
                           daftar().then((value) {
@@ -653,6 +739,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                               .clear();
                                           _kotaKey.currentState!.clear();
                                           Navigator.of(context).pop();
+                                          Navigator.of(context).pop();
                                         },
                                       ),
                                     ],
@@ -660,6 +747,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 },
                               );
                             } else {
+                              Navigator.of(context).pop();
                               showDialog<void>(
                                 context: context,
                                 barrierDismissible:
