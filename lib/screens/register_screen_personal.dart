@@ -134,6 +134,29 @@ class _RegisterPersonalScreenState extends State<RegisterPersonalScreen> {
     return {"daftar": false, "msg": "Terjadi kesalahan saat pendaftaran"};
   }
 
+  void showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible:
+          false, // Prevent user from dismissing by tapping outside
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            padding: EdgeInsets.all(20),
+            child: Row(
+              mainAxisSize: MainAxisSize.min, // Center content horizontally
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 10),
+                Text('Loading...'),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -629,6 +652,7 @@ class _RegisterPersonalScreenState extends State<RegisterPersonalScreen> {
                   const SizedBox(height: 24),
                   ElevatedButton(
                       onPressed: () {
+                        showLoadingDialog();
                         print("aaaa");
                         FocusScope.of(context).unfocus();
 
@@ -662,6 +686,7 @@ class _RegisterPersonalScreenState extends State<RegisterPersonalScreen> {
 
                                           _kotaKey.currentState!.clear();
                                           Navigator.of(context).pop();
+                                          Navigator.of(context).pop();
                                         },
                                       ),
                                     ],
@@ -669,6 +694,7 @@ class _RegisterPersonalScreenState extends State<RegisterPersonalScreen> {
                                 },
                               );
                             } else {
+                              Navigator.of(context).pop();
                               showDialog<void>(
                                 context: context,
                                 barrierDismissible:
