@@ -1,5 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.mikrotik">
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+    <uses-permission android:name="android.permission.ACTION_OPEN_DOCUMENT"/>
+    <uses-permission android:name="android.permission.ACTION_OPEN_DOCUMENT_TREE"/>
    <application
         android:label="Citraweb"
         android:icon="@mipmap/launcher_icon"
