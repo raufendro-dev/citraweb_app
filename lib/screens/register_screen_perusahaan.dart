@@ -14,6 +14,9 @@ import 'package:mikrotik/services/auth_service.dart';
 import '../models/dropdown_model.dart';
 import 'dart:convert';
 import 'package:image/image.dart' as Img;
+import 'package:path/path.dart' as p;
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:mime/mime.dart';
 
 class RegisterPerusahaanScreen extends StatefulWidget {
   const RegisterPerusahaanScreen({Key? key}) : super(key: key);
@@ -229,6 +232,11 @@ class _RegisterPerusahaanScreen extends State<RegisterPerusahaanScreen> {
       });
     });
   }
+
+  String fileName = '';
+  String fileBase64 = '';
+  String fileType = '';
+  String alertFile = '';
 
   @override
   Widget build(BuildContext context) {
@@ -689,9 +697,48 @@ class _RegisterPerusahaanScreen extends State<RegisterPerusahaanScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       ElevatedButton(
-                        onPressed: _pickImage,
-                        child: Text('Foto NPWP'),
-                      ),
+                          onPressed: () async {
+                            Navigator.pop(context);
+
+                            final ImagePicker _picker = ImagePicker();
+                            XFile? image;
+                            image = await _picker.pickImage(
+                                source: ImageSource.gallery);
+                            print(image!.name);
+                            print(image.path);
+                            final extension = p.extension(image.path);
+                            print(extension);
+                            File file = File(image.path.toString());
+                            var result =
+                                await FlutterImageCompress.compressWithFile(
+                              file.path,
+                              minWidth: 800,
+                              minHeight: 600,
+                              quality: 70,
+                            );
+                            print(result);
+                            // List<int> fileInByte = result.readAsBytesSync();
+                            String fileInBase64 = base64Encode(result!);
+
+                            String dataBase64 = ('data:' +
+                                lookupMimeType(image.path).toString() +
+                                ';base64,' +
+                                fileInBase64);
+                            print(dataBase64);
+                            setState(() {
+                              fileName = image!.name.toString();
+
+                              fileBase64 = dataBase64;
+                              fileType = extension.toString();
+                              alertFile = '';
+                            });
+
+                            print(fileName);
+                          },
+                          child: Text(
+                            'Pilih Foto',
+                            textAlign: TextAlign.center,
+                          )),
                     ],
                   ),
                   const SizedBox(height: 24),

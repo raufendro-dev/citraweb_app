@@ -35,13 +35,12 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_html: ^2.2.1
+  flutter_image_compress: ^2.3.0
   fluttertoast: ^8.0.8
   font_awesome_flutter: ^10.0.0
   http: ^0.13.4
-  image_picker: ^0.8.9
   image: ^3.0.1
-  # For file type/format extraction
- 
+  image_picker: ^0.8.9
   shared_preferences: ^2.0.15
   shimmer: ^2.0.0
   url_launcher: ^6.0.18
