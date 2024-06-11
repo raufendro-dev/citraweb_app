@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -35,6 +36,10 @@ class _RegisterPerusahaanScreen extends State<RegisterPerusahaanScreen> {
   final controllerEmail = TextEditingController();
   final controllerSelular = TextEditingController();
   final controllerPerusahaan = TextEditingController();
+  final controllerNoNPWP = TextEditingController();
+  final controllerNoNPWP2 = TextEditingController();
+  final controllerPerusahaanNPWP = TextEditingController();
+  final controllerAlamatNPWP = TextEditingController();
   final controllerJabatan = TextEditingController();
   final controllerAlamatLengkap = TextEditingController();
   final controllerKotaLain = TextEditingController();
@@ -133,8 +138,11 @@ class _RegisterPerusahaanScreen extends State<RegisterPerusahaanScreen> {
       "faxdaerah": controllerFaxDaerah.text,
       "fax": controllerFax.text,
       "url": controllerUrl.text,
-      "foto_npwp": "",
-      "tipefile": "",
+      "perusahaan_npwp": controllerPerusahaanNPWP.text,
+      "alamat_npwp": controllerAlamatNPWP.text,
+      "no_npwp": controllerNoNPWP.text,
+      "foto_npwp": fileBase64,
+      "tipefile": fileType.replaceAll(".", ""),
     });
     print(bodyPost);
     var res = await http.post(
@@ -692,14 +700,63 @@ class _RegisterPerusahaanScreen extends State<RegisterPerusahaanScreen> {
                       labelText: 'Situs Web',
                     ),
                   ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: controllerNoNPWP,
+                    keyboardType: TextInputType.text,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'^\d{0,4}(-\d{0,4})?(-\d{0,4})?$'),
+                      ),
+                      NumberInputFormatter(),
+                    ],
+                    decoration: getInputDecoration().copyWith(
+                      hintText: '####-####-####',
+                      labelText: 'No NPWP',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: controllerPerusahaanNPWP,
+                    keyboardType: TextInputType.text,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Silahkan masukan nama pada NPWP perusahaan';
+                      }
+                      return null;
+                    },
+                    decoration: getInputDecoration().copyWith(
+                      prefixIcon: const Icon(FontAwesomeIcons.building),
+                      hintText: 'Citraweb',
+                      labelText: 'Perusahaan NPWP',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: controllerAlamatNPWP,
+                    keyboardType: TextInputType.streetAddress,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Silahkan masukan alamat npwp';
+                      }
+                      return null;
+                    },
+                    maxLines: 3,
+                    decoration: getInputDecoration().copyWith(
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 14,
+                        horizontal: 8,
+                      ),
+                      prefixIcon: const Icon(FontAwesomeIcons.mapMarkedAlt),
+                      hintText: 'Jalan Petung 31 Papringan Yogyakarta',
+                      labelText: 'Alamat Lengkap NPWP',
+                    ),
+                  ),
                   const SizedBox(height: 24),
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       ElevatedButton(
                           onPressed: () async {
-                            Navigator.pop(context);
-
                             final ImagePicker _picker = ImagePicker();
                             XFile? image;
                             image = await _picker.pickImage(
@@ -733,10 +790,12 @@ class _RegisterPerusahaanScreen extends State<RegisterPerusahaanScreen> {
                               alertFile = '';
                             });
 
-                            print(fileName);
+                            print(fileType);
                           },
                           child: Text(
-                            'Pilih Foto',
+                            fileBase64 != ''
+                                ? 'Ubah Foto NPWP'
+                                : 'Pilih Foto NPWP',
                             textAlign: TextAlign.center,
                           )),
                     ],
@@ -744,91 +803,93 @@ class _RegisterPerusahaanScreen extends State<RegisterPerusahaanScreen> {
                   const SizedBox(height: 24),
                   ElevatedButton(
                       onPressed: () {
-                        showLoadingDialog();
-                        FocusScope.of(context).unfocus();
-                        if (_keyDaftar.currentState!.validate()) {
-                          daftar().then((value) {
-                            if (value['daftar']) {
-                              showDialog<void>(
-                                context: context,
-                                useRootNavigator: false,
-                                barrierDismissible:
-                                    false, // user must tap button!
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    content: Html(
-                                      data: value['msg'],
-                                    ),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        child: const Text('close'),
-                                        onPressed: () {
-                                          controllerUsername.clear();
-                                          controllerPassword.clear();
-                                          controllerUlangiPassword.clear();
-                                          controllerNama.clear();
-                                          controllerEmail.clear();
-                                          controllerSelular.clear();
-                                          controllerPerusahaan.clear();
-                                          controllerJabatan.clear();
-                                          controllerAlamatLengkap.clear();
-                                          controllerKotaLain.clear();
-                                          controllerKodePos.clear();
-                                          controllerTelpNegara.clear();
-                                          controllerTelpDaerah.clear();
-                                          controllerTelp.clear();
-                                          controllerFaxNegara.clear();
-                                          controllerFaxDaerah.clear();
-                                          controllerFax.clear();
-                                          controllerUrl.clear();
+                        if (fileBase64 != '') {
+                          FocusScope.of(context).unfocus();
+                          if (_keyDaftar.currentState!.validate()) {
+                            showLoadingDialog();
+                            daftar().then((value) {
+                              if (value['daftar']) {
+                                showDialog<void>(
+                                  context: context,
+                                  useRootNavigator: false,
+                                  barrierDismissible:
+                                      false, // user must tap button!
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      content: Html(
+                                        data: value['msg'],
+                                      ),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: const Text('close'),
+                                          onPressed: () {
+                                            controllerUsername.clear();
+                                            controllerPassword.clear();
+                                            controllerUlangiPassword.clear();
+                                            controllerNama.clear();
+                                            controllerEmail.clear();
+                                            controllerSelular.clear();
+                                            controllerPerusahaan.clear();
+                                            controllerJabatan.clear();
+                                            controllerAlamatLengkap.clear();
+                                            controllerKotaLain.clear();
+                                            controllerKodePos.clear();
+                                            controllerTelpNegara.clear();
+                                            controllerTelpDaerah.clear();
+                                            controllerTelp.clear();
+                                            controllerFaxNegara.clear();
+                                            controllerFaxDaerah.clear();
+                                            controllerFax.clear();
+                                            controllerUrl.clear();
 
-                                          _jenisPerusahaanKey.currentState!
-                                              .clear();
-                                          _kotaKey.currentState!.clear();
-                                          Navigator.of(context).pop();
-                                          Navigator.of(context).pop();
-                                        },
+                                            _jenisPerusahaanKey.currentState!
+                                                .clear();
+                                            _kotaKey.currentState!.clear();
+                                            Navigator.of(context).pop();
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              } else {
+                                Navigator.of(context).pop();
+                                showDialog<void>(
+                                  context: context,
+                                  barrierDismissible:
+                                      false, // user must tap button!
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      content: Html(
+                                        data: value['msg'],
                                       ),
-                                    ],
-                                  );
-                                },
-                              );
-                            } else {
-                              Navigator.of(context).pop();
-                              showDialog<void>(
-                                context: context,
-                                barrierDismissible:
-                                    false, // user must tap button!
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    content: Html(
-                                      data: value['msg'],
-                                    ),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        child: const Text('close'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                              // Fluttertoast.showToast(
-                              //     msg: value['msg'],
-                              //     toastLength: Toast.LENGTH_LONG,
-                              //     gravity: ToastGravity.CENTER,
-                              //     backgroundColor:
-                              //         Colors.black.withOpacity(0.7));
-                            }
-                          });
-                        } else {
-                          Fluttertoast.showToast(
-                              msg: 'Silahkan Lengkapi data diri Anda',
-                              toastLength: Toast.LENGTH_LONG,
-                              gravity: ToastGravity.CENTER,
-                              backgroundColor: Colors.black.withOpacity(0.7));
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: const Text('close'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                                // Fluttertoast.showToast(
+                                //     msg: value['msg'],
+                                //     toastLength: Toast.LENGTH_LONG,
+                                //     gravity: ToastGravity.CENTER,
+                                //     backgroundColor:
+                                //         Colors.black.withOpacity(0.7));
+                              }
+                            });
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: 'Silahkan Lengkapi data diri Anda',
+                                toastLength: Toast.LENGTH_LONG,
+                                gravity: ToastGravity.CENTER,
+                                backgroundColor: Colors.black.withOpacity(0.7));
+                          }
                         }
                       },
                       child: const Text('Daftar')),
@@ -840,5 +901,26 @@ class _RegisterPerusahaanScreen extends State<RegisterPerusahaanScreen> {
         ),
       ),
     );
+  }
+}
+
+class NumberInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    if (newValue.text.length > oldValue.text.length) {
+      final StringBuffer newText = StringBuffer();
+      for (int i = 0; i < newValue.text.length; i++) {
+        if ((i == 4 || i == 9) && newValue.text[i] != '-') {
+          newText.write('-');
+        }
+        newText.write(newValue.text[i]);
+      }
+      return TextEditingValue(
+        text: newText.toString(),
+        selection: TextSelection.collapsed(offset: newText.length),
+      );
+    }
+    return newValue;
   }
 }

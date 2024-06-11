@@ -50,7 +50,8 @@ class _DetailProductScreenState extends State<DetailProductScreen>
         '&sess_id=' +
         jsonDecode((await authService.strDataLogin).toString())['sess_id'] +
         '&idbarang=' +
-        (await futureProdukDetail.then((value) => value.first['id']))));
+        (await futureProdukDetail.then((value) => value.first['id'])) +
+        '&varian=$pilihVarian'));
     print(res.body);
     if (res.statusCode == 200 &&
         jsonDecode(res.body)['data'].first['status_add']) {
@@ -986,142 +987,144 @@ class _DetailProductScreenState extends State<DetailProductScreen>
                                               });
                                             }
                                           } else {
-                                            // if (await authService
-                                            //     .cekLogin(context)) {
-                                            // addtocart
-                                            // addToCart();\
-                                            showModalBottomSheet(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return StatefulBuilder(
-                                                  builder: (BuildContext
-                                                          context,
-                                                      StateSetter setState) {
-                                                    return Container(
-                                                      height: 200,
-                                                      child: Column(
-                                                        // mainAxisAlignment:
-                                                        //     MainAxisAlignment
-                                                        //         .center,
-                                                        children: <Widget>[
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    top: 10),
-                                                            child: Center(
-                                                              child: Text(
-                                                                "Pilih Varian",
-                                                                style: TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                    fontSize:
-                                                                        18),
+                                            if (await authService
+                                                .cekLogin(context)) {
+                                              // addtocart
+                                              // addToCart();\
+                                              showModalBottomSheet(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return StatefulBuilder(
+                                                    builder: (BuildContext
+                                                            context,
+                                                        StateSetter setState) {
+                                                      return Container(
+                                                        height: 200,
+                                                        child: Column(
+                                                          // mainAxisAlignment:
+                                                          //     MainAxisAlignment
+                                                          //         .center,
+                                                          children: <Widget>[
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      top: 10),
+                                                              child: Center(
+                                                                child: Text(
+                                                                  "Pilih Varian",
+                                                                  style: TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontSize:
+                                                                          18),
+                                                                ),
                                                               ),
                                                             ),
-                                                          ),
-                                                          SizedBox(
-                                                            height: 5,
-                                                          ),
-                                                          Center(
-                                                            child:
-                                                                DropdownButton<
-                                                                    String>(
-                                                              value:
-                                                                  pilihVarian, // Set initial value
-                                                              items: variantNames.map<
-                                                                  DropdownMenuItem<
-                                                                      String>>((String
-                                                                  value) {
-                                                                return DropdownMenuItem<
-                                                                    String>(
-                                                                  value: value,
-                                                                  child: Text(
-                                                                      value),
-                                                                );
-                                                              }).toList(),
-                                                              onChanged: (String?
-                                                                  newValue) {
-                                                                // Handle dropdown selection change
-                                                                setState(() {
-                                                                  print(
-                                                                      newValue);
-                                                                  pilihVarian =
-                                                                      newValue
-                                                                          .toString();
-                                                                  // Update selected value (if using a stateful widget)
-                                                                });
-                                                              },
+                                                            SizedBox(
+                                                              height: 5,
                                                             ),
-                                                          ),
-                                                          SizedBox(
-                                                            height: 23,
-                                                          ),
-                                                          ElevatedButton(
-                                                            onPressed: () {
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                            },
-                                                            child: Text(
-                                                                'Lanjutkan'),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                            );
-                                            //=======================
-                                            // if (await addToCart()) {
-                                            //   // authService.fetchCart(context).then(
-                                            //   //   (value) {
-                                            //   Navigator.push(
-                                            //       context,
-                                            //       MaterialPageRoute<void>(
-                                            //         builder: (BuildContext
-                                            //                 context) =>
-                                            //             const ShopingCartScreen(),
-                                            //       ));
-                                            //   //   return value;
-                                            //   // },
-                                            //   // );
-                                            //   cartProvider.plushItem();
+                                                            Center(
+                                                              child:
+                                                                  DropdownButton<
+                                                                      String>(
+                                                                value:
+                                                                    pilihVarian, // Set initial value
+                                                                items: variantNames.map<
+                                                                    DropdownMenuItem<
+                                                                        String>>((String
+                                                                    value) {
+                                                                  return DropdownMenuItem<
+                                                                      String>(
+                                                                    value:
+                                                                        value,
+                                                                    child: Text(
+                                                                        value),
+                                                                  );
+                                                                }).toList(),
+                                                                onChanged: (String?
+                                                                    newValue) {
+                                                                  // Handle dropdown selection change
+                                                                  setState(() {
+                                                                    print(
+                                                                        newValue);
+                                                                    pilihVarian =
+                                                                        newValue
+                                                                            .toString();
+                                                                    // Update selected value (if using a stateful widget)
+                                                                  });
+                                                                },
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              height: 23,
+                                                            ),
+                                                            ElevatedButton(
+                                                              onPressed: () {
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop();
+                                                              },
+                                                              child: Text(
+                                                                  'Lanjutkan'),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                              );
+                                              //=======================
+                                              // if (await addToCart()) {
+                                              //   // authService.fetchCart(context).then(
+                                              //   //   (value) {
+                                              //   Navigator.push(
+                                              //       context,
+                                              //       MaterialPageRoute<void>(
+                                              //         builder: (BuildContext
+                                              //                 context) =>
+                                              //             const ShopingCartScreen(),
+                                              //       ));
+                                              //   //   return value;
+                                              //   // },
+                                              //   // );
+                                              //   cartProvider.plushItem();
 
-                                            //   // print(cartProvider.jumlahItem);
-                                            // }
-                                            //========================
-                                            // } else {
-                                            //   Navigator.push(
-                                            //       context,
-                                            //       MaterialPageRoute<void>(
-                                            //         builder: (BuildContext
-                                            //                 context) =>
-                                            //             LoginScreen(),
-                                            //       )).then((value) async {
-                                            //     if ((await authService
-                                            //             .strDataLogin)
-                                            //         .toString()
-                                            //         .isNotEmpty) {
-                                            //       addToCart();
-                                            //       cartProvider.plushItem();
-                                            //       Navigator.of(context)
-                                            //           .pushNamedAndRemoveUntil(
-                                            //               HomePageScreen
-                                            //                   .routeName,
-                                            //               (Route<dynamic>
-                                            //                       route) =>
-                                            //                   false);
+                                              //   // print(cartProvider.jumlahItem);
+                                              // }
+                                              //========================
+                                            } else {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute<void>(
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        LoginScreen(),
+                                                  )).then((value) async {
+                                                if ((await authService
+                                                        .strDataLogin)
+                                                    .toString()
+                                                    .isNotEmpty) {
+                                                  addToCart();
+                                                  cartProvider.plushItem();
+                                                  Navigator.of(context)
+                                                      .pushNamedAndRemoveUntil(
+                                                          HomePageScreen
+                                                              .routeName,
+                                                          (Route<dynamic>
+                                                                  route) =>
+                                                              false);
 
-                                            //       Navigator.pushNamed(
-                                            //           context,
-                                            //           ShopingCartScreen
-                                            //               .routeName);
-                                            //     }
-                                            //   });
-                                            // }
+                                                  Navigator.pushNamed(
+                                                      context,
+                                                      ShopingCartScreen
+                                                          .routeName);
+                                                }
+                                              });
+                                            }
                                           }
                                         },
                               child: Text(
