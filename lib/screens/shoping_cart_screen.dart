@@ -54,6 +54,7 @@ class _ShopingCartScreenState extends State<ShopingCartScreen> {
   Future<bool> changeQty({
     required String idCart,
     required String idBarang,
+    required String varian,
     required int qty,
   }) async {
     print({
@@ -74,7 +75,12 @@ class _ShopingCartScreenState extends State<ShopingCartScreen> {
           "iduser": await auth.idUser,
           "sess_id": await auth.sessId,
           "data_barang": [
-            {"id": idCart, "idbarang": idBarang, "jum_barang": qty}
+            {
+              "id": idCart,
+              "idbarang": idBarang,
+              "jum_barang": qty,
+              "varian": varian
+            }
           ]
         }));
     if (responseShopingCart.statusCode == 200) {
@@ -292,6 +298,28 @@ class _ShopingCartScreenState extends State<ShopingCartScreen> {
                                             const SizedBox(
                                               height: 6,
                                             ),
+                                            data['data_barang'][index]
+                                                        ['varian'] !=
+                                                    ""
+                                                ? Column(
+                                                    children: [
+                                                      Text(
+                                                        'Varian ' +
+                                                            data['data_barang']
+                                                                    [index]
+                                                                ['varian'],
+                                                        style: TextStyle(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .primary),
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 6,
+                                                      ),
+                                                    ],
+                                                  )
+                                                : Container(),
                                             Text(
                                               'Rp ' +
                                                   data['data_barang'][index]
@@ -362,6 +390,10 @@ class _ShopingCartScreenState extends State<ShopingCartScreen> {
                                                             data['data_barang']
                                                                     [index]
                                                                 ['idbarang'],
+                                                        varian:
+                                                            data['data_barang']
+                                                                    [index]
+                                                                ['varian'],
                                                         qty: qty,
                                                       ).then((value) {
                                                         if (value) {
@@ -454,6 +486,10 @@ class _ShopingCartScreenState extends State<ShopingCartScreen> {
                                                             data['data_barang']
                                                                     [index]
                                                                 ['idbarang'],
+                                                        varian:
+                                                            data['data_barang']
+                                                                    [index]
+                                                                ['varian'],
                                                         qty: qty,
                                                       ).then((value) {
                                                         if (value) {
@@ -544,6 +580,10 @@ class _ShopingCartScreenState extends State<ShopingCartScreen> {
                                                             data['data_barang']
                                                                     [index]
                                                                 ['idbarang'],
+                                                        varian:
+                                                            data['data_barang']
+                                                                    [index]
+                                                                ['idbarang'],
                                                         qty: qty,
                                                       ).then((value) {
                                                         if (value) {
@@ -603,6 +643,8 @@ class _ShopingCartScreenState extends State<ShopingCartScreen> {
                                                     [index]['id'],
                                                 idBarang: data['data_barang']
                                                     [index]['idbarang'],
+                                                varian: data['data_barang']
+                                                    [index]['varian'],
                                                 qty: 0,
                                               ).then((isDeleted) async {
                                                 if (isDeleted) {

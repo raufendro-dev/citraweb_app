@@ -75,6 +75,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     String sessionI = await AuthService().sessId;
     final responsePesan = await http.get(Uri.parse(Config.baseUrlApi +
         'app-api/keranjang/selesai/?key=0cc7da679bea04fea453c8062e06514d&iduser=$id&sess_id=$sessionI&isDiambil=$isDiambil&MKid_tujuan=$_mkIdTujuan'));
+    print(Config.baseUrlApi +
+        'app-api/keranjang/selesai/?key=0cc7da679bea04fea453c8062e06514d&iduser=$id&sess_id=$sessionI&isDiambil=$isDiambil&MKid_tujuan=$_mkIdTujuan');
     if (responsePesan.statusCode == 200) {
       final Map pesanObj = jsonDecode(responsePesan.body);
       if (pesanObj['status'] == 'success') {
@@ -206,6 +208,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               child: IconButton(
                                 onPressed: () {
                                   print('pilih alamat');
+                                  print(isDiambil);
+                                  print(_mkIdTujuan);
                                   Navigator.of(context)
                                       .push(
                                     _createRoute(

@@ -36,10 +36,11 @@ class _DetailPesananScreenState extends State<DetailPesananScreen> {
     if (responseDetailOrder.statusCode == 200) {
       print('fetchDetailOrder');
       final Map order = jsonDecode(responseDetailOrder.body);
-      print(order['data']);
+      // print(order['data']);
+      // order['data'] = [];
       if (order['data'].isNotEmpty) {
         detailOrder = order['data'].first;
-        print(detailOrder);
+        print(order['data'].first);
       }
     } else {
       print('Failed to load order');
@@ -457,6 +458,23 @@ class _DetailPesananScreenState extends State<DetailPesananScreen> {
                                                       fontWeight:
                                                           FontWeight.w400),
                                                 ),
+                                                produk['varian'] != ""
+                                                    ? const SizedBox(height: 3)
+                                                    : Container(),
+                                                produk['varian'] != ""
+                                                    ? Text(
+                                                        "Varian " +
+                                                            produk['varian'],
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: const TextStyle(
+                                                            fontSize: 11,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w400),
+                                                      )
+                                                    : Container(),
                                                 const SizedBox(height: 6),
                                                 Text(
                                                   produk['produk_kode'],
@@ -609,14 +627,14 @@ class _DetailPesananScreenState extends State<DetailPesananScreen> {
                         ],
                       ),
                     ),
-                    Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(bottom: 16),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 4, vertical: 4),
-                      color: Theme.of(context).colorScheme.background,
-                      child: Html(data: detailOrder['data_payment_txt']),
-                    ),
+                    // Container(
+                    //   width: double.infinity,
+                    //   margin: const EdgeInsets.only(bottom: 16),
+                    //   padding: const EdgeInsets.symmetric(
+                    //       horizontal: 4, vertical: 4),
+                    //   color: Theme.of(context).colorScheme.background,
+                    //   child: Html(data: detailOrder['data_payment_txt']),
+                    // ),
                     Container(
                       width: double.infinity,
                       margin: const EdgeInsets.only(bottom: 16),

@@ -7,7 +7,7 @@ import 'package:mikrotik/constant/config.dart';
 import 'package:mikrotik/screens/detail_pesanan_screen.dart';
 import 'package:mikrotik/services/auth_service.dart';
 import 'package:mikrotik/widgets/shimmer_widget.dart';
-
+import 'package:mikrotik/screens/confirm_pesanan_screen.dart';
 import 'package:mikrotik/main.dart';
 
 class OrderTabContent extends StatefulWidget {
@@ -207,7 +207,11 @@ class _OrderTabContentState extends State<OrderTabContent>
                                       style: ElevatedButton.styleFrom(
                                         padding: const EdgeInsets.all(4),
                                       ),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        Navigator.of(context).push(_createRoute(
+                                            ConfirmPesananScreen(),
+                                            slideDirection.toLeft));
+                                      },
                                       child: const Text(
                                         'Konfirmasi',
                                         style: TextStyle(fontSize: 12),

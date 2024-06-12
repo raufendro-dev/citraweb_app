@@ -23,6 +23,9 @@ class PilihAlamatScreen extends StatelessWidget {
     final List<Map<String, dynamic>> listAlamat = [];
     final responseAlamat = await http.get(Uri.parse(Config.baseUrlApi +
         'app-api/keranjang/ganti-tujuan/?key=0cc7da679bea04fea453c8062e06514d&iduser=$id&sess_id=$sessionI&isDiambil=$sessionI&MKid_tujuan=$mkIdTujuan'));
+
+    print(Config.baseUrlApi +
+        'app-api/keranjang/ganti-tujuan/?key=0cc7da679bea04fea453c8062e06514d&iduser=$id&sess_id=$sessionI&isDiambil=$sessionI&MKid_tujuan=$mkIdTujuan');
     if (responseAlamat.statusCode == 200) {
       final Map alamat = jsonDecode(responseAlamat.body);
       if (alamat['data'].isNotEmpty) {
@@ -55,6 +58,7 @@ class PilihAlamatScreen extends StatelessWidget {
           builder: (context, snapsot) {
             if (snapsot.hasData) {
               final objAlamat = snapsot.data!.first;
+              print(objAlamat);
               return Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -82,14 +86,11 @@ class PilihAlamatScreen extends StatelessWidget {
                           RenderContext context,
                           Map<String, String> attributes,
                           dom.Element? element) async {
-                        //open URL in webview, or launch URL in browser, or any other logic here
-                        if (await canLaunch(url!)) {
-                          await launch(
-                            url,
-                          );
-                        } else {
-                          throw 'Could not launch $url';
-                        }
+                        print(url);
+
+                        await launchUrl(
+                          Uri.parse(url.toString()),
+                        );
                       },
                     ),
                   ),
@@ -194,7 +195,8 @@ class PilihAlamatScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                  if (objAlamat['ada_data_pilihan_pengiriman'])
+                  if (objAlamat['ada_data_pilihan_pengiriman'] == true &&
+                      objAlamat['ada_data_pilihan_pengiriman'] != null)
                     ...objAlamat['data_pilihan_pengiriman'].map(
                       (elem) {
                         return Container(
