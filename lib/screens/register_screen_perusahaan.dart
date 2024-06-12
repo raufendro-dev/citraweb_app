@@ -841,6 +841,9 @@ class _RegisterPerusahaanScreen extends State<RegisterPerusahaanScreen> {
                                             controllerFaxDaerah.clear();
                                             controllerFax.clear();
                                             controllerUrl.clear();
+                                            controllerAlamatNPWP.clear();
+                                            controllerNoNPWP.clear();
+                                            controllerPerusahaanNPWP.clear();
 
                                             _jenisPerusahaanKey.currentState!
                                                 .clear();

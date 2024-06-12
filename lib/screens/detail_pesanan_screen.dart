@@ -36,8 +36,10 @@ class _DetailPesananScreenState extends State<DetailPesananScreen> {
     if (responseDetailOrder.statusCode == 200) {
       print('fetchDetailOrder');
       final Map order = jsonDecode(responseDetailOrder.body);
+      print(order['data']);
       if (order['data'].isNotEmpty) {
         detailOrder = order['data'].first;
+        print(detailOrder);
       }
     } else {
       print('Failed to load order');
