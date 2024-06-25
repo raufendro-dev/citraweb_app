@@ -19,6 +19,7 @@ import 'package:mikrotik/services/auth_service.dart';
 import 'package:mikrotik/widgets/shimmer_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../screens/cekgaransi_screen.dart';
 import '../main.dart' show slideDirection;
 
 class EndDrawerHome extends StatefulWidget {
@@ -403,7 +404,7 @@ class _EndDrawerHomeState extends State<EndDrawerHome> {
                     ),
                     horizontalTitleGap: 0,
                     title: Text(
-                      'Cek Garansi',
+                      'Cek Garansiiiiii',
                       style: TextStyle(
                         color: Colors.grey.shade800,
                         fontSize: 14,
@@ -418,7 +419,9 @@ class _EndDrawerHomeState extends State<EndDrawerHome> {
                     ),
                     onTap: () {
                       // Navigator.pop(context);
-                      launch(Config.baseUrlApi + 'warranty_check/');
+                      // launch(Config.baseUrlApi + 'warranty_check/');
+                      Navigator.of(context).push(_createRoute(
+                          const CekgaransiScreen(), slideDirection.toLeft));
                     },
                   ),
                   const Padding(
