@@ -10,6 +10,6 @@ class CekgaransiScreen extends StatefulWidget {
 class _CekgaransiScreenState extends State<CekgaransiScreen> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold();
   }
 }
