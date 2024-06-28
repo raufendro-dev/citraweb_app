@@ -111,33 +111,34 @@ class _FormRmaState extends State<FormRma> {
       print('fetchSerialNumber');
 
       final Map noInvoice = jsonDecode(responseNoInvoice.body);
-      if (noInvoice['data'].isNotEmpty) {
-        var bodyPost = jsonEncode({
-          "key": "0cc7da679bea04fea453c8062e06514d",
-          "iduser": dataLogin['MKid'],
-          "sess_id": dataLogin['sess_id'],
-          "no_invoice_value": noInvoice['data'].first['no_invoice_value']
-        });
+      print(noInvoice);
+      // if (noInvoice['data'].isNotEmpty) {
+      //   var bodyPost = jsonEncode({
+      //     "key": "0cc7da679bea04fea453c8062e06514d",
+      //     "iduser": dataLogin['MKid'],
+      //     "sess_id": dataLogin['sess_id'],
+      //     "no_invoice_value": noInvoice['data'].first['noInvoice']
+      //   });
 
-        // print(bodyPost);
-        final responseJenisBarang = await http.post(
-          Uri.parse(Config.baseUrlApi + 'app-api/rma/jenis-barang/'),
-          body: bodyPost,
-        );
+      //   // print(bodyPost);
+      //   final responseJenisBarang = await http.post(
+      //     Uri.parse(Config.baseUrlApi + 'app-api/rma/jenis-barang/'),
+      //     body: bodyPost,
+      //   );
 
-        final Map jenisBarang = jsonDecode(responseJenisBarang.body);
-        if (jenisBarang['data'].isNotEmpty) {
-          for (var infoItem in jenisBarang['data'].first['data_jenis_barang']) {
-            infoItem['id_order'] = jenisBarang['data'].first['id_order'];
-            listJenisBarang.add(DropdownModel(
-              id: infoItem['jenis_barang_value'],
-              name: infoItem['jenis_barang'],
-              data: infoItem,
-            ));
-          }
-          // print(jenisBarang['data']);
-        }
-      }
+      //   final Map jenisBarang = jsonDecode(responseJenisBarang.body);
+      //   if (jenisBarang['data'].isNotEmpty) {
+      //     for (var infoItem in jenisBarang['data'].first['data_jenis_barang']) {
+      //       infoItem['id_order'] = jenisBarang['data'].first['id_order'];
+      //       listJenisBarang.add(DropdownModel(
+      //         id: infoItem['jenis_barang_value'],
+      //         name: infoItem['jenis_barang'],
+      //         data: infoItem,
+      //       ));
+      //     }
+      //     // print(jenisBarang['data']);
+      //   }
+      // }
     } else {
       print('Failed to load Serial Number');
     }

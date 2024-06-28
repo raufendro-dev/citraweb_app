@@ -20,6 +20,7 @@ import 'package:mikrotik/widgets/shimmer_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../screens/cekgaransi_screen.dart';
+import 'package:mikrotik/screens/pilih_RMA.dart';
 import '../main.dart' show slideDirection;
 
 class EndDrawerHome extends StatefulWidget {
@@ -376,7 +377,7 @@ class _EndDrawerHomeState extends State<EndDrawerHome> {
                         // Navigator.pop(context);
                         Navigator.of(context)
                             .push(_createRoute(
-                                const FormRma(), slideDirection.toLeft))
+                                const PilihRMA(), slideDirection.toLeft))
                             .then((value) {
                           if (value ?? false) {
                             Navigator.pop(context);
@@ -404,7 +405,7 @@ class _EndDrawerHomeState extends State<EndDrawerHome> {
                     ),
                     horizontalTitleGap: 0,
                     title: Text(
-                      'Cek Garansiiiiii',
+                      'Cek Garansi',
                       style: TextStyle(
                         color: Colors.grey.shade800,
                         fontSize: 14,
