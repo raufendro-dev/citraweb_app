@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mikrotik/screens/form_rma%20_tanpa.dart';
+import 'package:mikrotik/screens/form_rma_serial.dart';
+import 'package:mikrotik/screens/form_rma_tanpa.dart';
 
 class PilihRMA extends StatefulWidget {
   const PilihRMA({Key? key}) : super(key: key);
@@ -72,6 +73,12 @@ class _PilihRMAState extends State<PilihRMA> {
                               ));
                         } else if (selectedOption == "denganserial") {
                           print(selectedOption);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (BuildContext context) =>
+                                    const FormRmaSerial(),
+                              ));
                           // Navigator.push(
                           //     context,
                           //     MaterialPageRoute<void>(
