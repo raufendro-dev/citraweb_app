@@ -237,13 +237,15 @@ class DetailRmaScreen extends StatelessWidget {
                                 onPressed: () async {
                                   final url = rma['download_rma_form_url'];
                                   print(url);
-                                  if (await canLaunch(url)) {
-                                    await launch(
-                                      url,
-                                    );
-                                  } else {
-                                    throw 'Could not launch $url';
-                                  }
+                                  await launchUrl(Uri.parse(url),
+                                      mode: LaunchMode.externalApplication);
+                                  // if (await canLaunch(url)) {
+                                  //   await launch(
+                                  //     url,
+                                  //   );
+                                  // } else {
+                                  //   throw 'Could not launch $url';
+                                  // }
                                 },
                                 child: Text(rma['download_rma_form']),
                               ),
@@ -252,13 +254,15 @@ class DetailRmaScreen extends StatelessWidget {
                                 onPressed: () async {
                                   final url = rma['download_rma_alamat_url'];
                                   print(url);
-                                  if (await canLaunch(url)) {
-                                    await launch(
-                                      url,
-                                    );
-                                  } else {
-                                    throw 'Could not launch $url';
-                                  }
+                                  await launchUrl(Uri.parse(url),
+                                      mode: LaunchMode.externalApplication);
+                                  // if (await canLaunch(url)) {
+                                  //   await launch(
+                                  //     url,
+                                  //   );
+                                  // } else {
+                                  //   throw 'Could not launch $url';
+                                  // }
                                 },
                                 child: Text(rma['download_rma_alamat']),
                               ),
@@ -267,13 +271,15 @@ class DetailRmaScreen extends StatelessWidget {
                                 onPressed: () async {
                                   final url = rma['download_uiDlText_url'];
                                   print(url);
-                                  if (await canLaunch(url)) {
-                                    await launch(
-                                      url,
-                                    );
-                                  } else {
-                                    throw 'Could not launch $url';
-                                  }
+                                  await launchUrl(Uri.parse(url),
+                                      mode: LaunchMode.externalApplication);
+                                  // if (await canLaunch(url)) {
+                                  //   await launch(
+                                  //     url,
+                                  //   );
+                                  // } else {
+                                  //   throw 'Could not launch $url';
+                                  // }
                                 },
                                 child: Text(rma['download_uiDlText']),
                               ),

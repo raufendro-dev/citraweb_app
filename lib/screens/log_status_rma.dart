@@ -83,14 +83,26 @@ class _LogStatusRmaState extends State<LogStatusRma> {
     futureLogs = fetchLogs();
   }
 
+  Stream<List<Map<String, dynamic>>> createDataStream() async* {
+    while (true) {
+      try {
+        final data = await fetchLogs();
+        yield data;
+        await Future.delayed(Duration(seconds: 5)); // Adjust polling interval
+      } catch (e) {
+        // Handle errors gracefully (e.g., retry logic)
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Log Status RMA'),
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-          future: futureLogs,
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+          stream: createDataStream(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final logs = snapshot.data!;
