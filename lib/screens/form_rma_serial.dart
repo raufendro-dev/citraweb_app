@@ -264,7 +264,7 @@ class __FormRmaSerialState extends State<FormRmaSerial> {
     });
 
     final responseKirimSession = await http.post(
-        Uri.parse(Config.baseUrlApi + 'app-api/rma/kirim-rma-no-lisensi/'),
+        Uri.parse(Config.baseUrlApi + 'app-api/rma/kirim-rma/'),
         body: bodyPost);
     if (responseKirimSession.statusCode == 200) {
       print('hapusSession');
@@ -794,7 +794,7 @@ class __FormRmaSerialState extends State<FormRmaSerial> {
                                               MaterialPageRoute<void>(
                                                 builder:
                                                     (BuildContext context) =>
-                                                        const FormRmaTanpaK(),
+                                                        const FormRmaSerialK(),
                                               ));
                                         }
                                       : null,
@@ -836,14 +836,14 @@ class __FormRmaSerialState extends State<FormRmaSerial> {
   }
 }
 
-class FormRmaTanpaK extends StatefulWidget {
-  const FormRmaTanpaK({Key? key}) : super(key: key);
+class FormRmaSerialK extends StatefulWidget {
+  const FormRmaSerialK({Key? key}) : super(key: key);
 
   @override
-  _FormRmaTanpakState createState() => _FormRmaTanpakState();
+  _FormRmaSerialkState createState() => _FormRmaSerialkState();
 }
 
-class _FormRmaTanpakState extends State<FormRmaTanpaK> {
+class _FormRmaSerialkState extends State<FormRmaSerialK> {
   late Future<List<Map<String, dynamic>>>? futureListRMA = fetchRMA();
   bool bolehKirim = false;
   Future<List<Map<String, dynamic>>> fetchRMA() async {
@@ -917,6 +917,7 @@ class _FormRmaTanpakState extends State<FormRmaTanpaK> {
       "iduser": dataLogin['MKid'],
       "sess_id": dataLogin['sess_id'],
     });
+
     print(bodyPost);
     var res = await http.post(
       Uri.parse(Config.baseUrlApi + 'app-api/rma/kirim-rma/'),

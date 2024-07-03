@@ -181,7 +181,8 @@ class DetailRmaScreen extends StatelessWidget {
                                         Text(ganti['type'] +
                                             ' ' +
                                             ganti['keterangan'])),
-                                  if (barang['gambar_segel'] != null)
+                                  if (barang['gambar_segel'] != null &&
+                                      barang['gambar_segel'] != "")
                                     const Text('Gambar Segel :'),
                                   SizedBox(
                                     height: 10,
