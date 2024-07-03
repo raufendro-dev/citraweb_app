@@ -41,6 +41,29 @@ class _CekgaransiScreenState extends State<CekgaransiScreen> {
     return true;
   }
 
+  void showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible:
+          false, // Prevent user from dismissing by tapping outside
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            padding: EdgeInsets.all(20),
+            child: Row(
+              mainAxisSize: MainAxisSize.min, // Center content horizontally
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 10),
+                Text('Loading...'),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,6 +104,7 @@ class _CekgaransiScreenState extends State<CekgaransiScreen> {
                     ),
                   ElevatedButton(
                     onPressed: () async {
+                      showLoadingDialog();
                       // Access the text from each controller
                       for (int i = 0; i < controllers.length; i++) {
                         final text = controllers[i].text;
@@ -128,6 +152,7 @@ class _CekgaransiScreenState extends State<CekgaransiScreen> {
                       await cekgaransi(dev);
 
                       device.clear();
+                      Navigator.pop(context);
                       await showModalBottomSheet(
                         context: context,
                         builder: (context) => _buildListViewBottomSheet(),

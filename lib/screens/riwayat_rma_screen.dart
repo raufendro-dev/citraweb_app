@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:mikrotik/constant/config.dart';
 import 'package:mikrotik/main.dart';
 import 'package:mikrotik/screens/detail_rma_screen.dart';
-import 'package:mikrotik/screens/form_rma.dart';
+import 'package:mikrotik/screens/pilih_RMA.dart';
 import 'package:mikrotik/services/auth_service.dart';
 import 'package:mikrotik/widgets/shimmer_widget.dart';
 
@@ -89,17 +89,7 @@ class _RiwayatRmaScreenState extends State<RiwayatRmaScreen> {
           splashRadius: 24,
           onPressed: () {
             Navigator.of(context)
-                .push(_createRoute(const FormRma(), slideDirection.toLeft))
-                .then((value) {
-              if (value ?? false) {
-                AuthService().strDataLogin.then((value) {
-                  setState(() {
-                    futureRMA = fetchRMA(jsonDecode(value.toString())['MKid'],
-                        jsonDecode(value.toString())['sess_id']);
-                  });
-                });
-              }
-            });
+                .push(_createRoute(const PilihRMA(), slideDirection.toLeft));
           },
           icon: const Icon(Icons.add),
         )

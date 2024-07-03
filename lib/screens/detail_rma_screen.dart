@@ -48,6 +48,7 @@ class DetailRmaScreen extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final rma = snapshot.data!;
+            print(rma);
             return Container(
               height: double.infinity,
               color: Theme.of(context).colorScheme.background,
@@ -122,7 +123,8 @@ class DetailRmaScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    if (rma['estimasi_waktu'].toString().isNotEmpty)
+                    if (rma['estimasi_waktu'].toString() != null &&
+                        rma['estimasi_waktu'] != "")
                       Padding(
                         padding: const EdgeInsets.only(bottom: 24.0),
                         child: Column(
@@ -160,10 +162,15 @@ class DetailRmaScreen extends StatelessWidget {
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                  Text('No Invoice : ' + barang['no_invoice']),
-                                  Text(barang['type'] +
-                                      ' : ' +
-                                      barang['detail']),
+                                  if (barang['no_invoice'] != null &&
+                                      barang['no_invoice'] != "")
+                                    Text(
+                                        'No Invoice : ' + barang['no_invoice']),
+                                  if (barang['type'] != null &&
+                                      barang['detail'] != null)
+                                    Text(barang['type'] +
+                                        ' : ' +
+                                        barang['detail']),
                                   Text('Keluhan : ' + barang['keluhan']),
                                   Text(
                                       'Kelengkapan : ' + barang['kelengkapan']),
@@ -174,13 +181,21 @@ class DetailRmaScreen extends StatelessWidget {
                                         Text(ganti['type'] +
                                             ' ' +
                                             ganti['keterangan'])),
+                                  if (barang['gambar_segel'] != null)
+                                    const Text('Gambar Segel :'),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  if (barang['gambar_segel'] != null &&
+                                      barang['gambar_segel'] != "")
+                                    Image.network(barang['gambar_segel']),
                                   const Divider(height: 12),
                                 ],
                               ))
                         ],
                       ),
                     ),
-                    if (rma['info_rma'].toString().isNotEmpty)
+                    if (rma['info_rma'].toString() != null)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 24.0),
                         child: Column(
