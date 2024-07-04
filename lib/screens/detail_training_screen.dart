@@ -231,13 +231,15 @@ class DetailTrainingScreen extends StatelessWidget {
                           OutlinedButton(
                             onPressed: () async {
                               var url = training['training_undangan'];
-                              if (await canLaunch(url)) {
-                                await launch(
-                                  url,
-                                );
-                              } else {
-                                throw 'Could not launch $url';
-                              }
+                              await launchUrl(Uri.parse(url),
+                                  mode: LaunchMode.externalApplication);
+                              // if (await canLaunch(url)) {
+                              //   await launch(
+                              //     url,
+                              //   );
+                              // } else {
+                              //   throw 'Could not launch $url';
+                              // }
                             },
                             style: OutlinedButton.styleFrom(
                               side: BorderSide(
@@ -250,13 +252,15 @@ class DetailTrainingScreen extends StatelessWidget {
                           OutlinedButton(
                             onPressed: () async {
                               var url = training['training_brosur'];
-                              if (await canLaunch(url)) {
-                                await launch(
-                                  url,
-                                );
-                              } else {
-                                throw 'Could not launch $url';
-                              }
+                              await launchUrl(Uri.parse(url),
+                                  mode: LaunchMode.externalApplication);
+                              // if (await canLaunch(url)) {
+                              //   await launch(
+                              //     url,
+                              //   );
+                              // } else {
+                              //   throw 'Could not launch $url';
+                              // }
                             },
                             style: OutlinedButton.styleFrom(
                               side: BorderSide(

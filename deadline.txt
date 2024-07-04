@@ -1,0 +1,11 @@
+Deadline
+
+
+USER TRAINING UBAH SERTIFIKAT:
+https://mkt.citraweb.co.id/app-api/training/user-training-ubah-sertifikat/
+{"key":"0cc7da679bea04fea453c8062e06514d","iduser":"129932","sess_id":"e228e54aee47dc4aeccae8e0b2993865","id_ubah_sertifikat":"14725","no_cert_basic":"113x112"}
+USER TRAINING LOG:
+https://mkt.citraweb.co.id/app-api/training/user-training-log/?key=0cc7da679bea04fea453c8062e06514d&iduser=129932&sess_id=e228e54aee47dc4aeccae8e0b2993865&id_training_detail=14725
+USER TRAINING KIRIM LOG:
+https://mkt.citraweb.co.id/app-api/training/user-training-kirim-log/
+{"key":"0cc7da679bea04fea453c8062e06514d","iduser":"129932","sess_id":"e228e54aee47dc4aeccae8e0b2993865","id_training_detail":"14725","pesan":"coba kirim pesan dari API"}

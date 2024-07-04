@@ -31,6 +31,8 @@ class _ContentTrainingState extends State<ContentTraining>
     _tabController = TabController(vsync: this, length: listKategori.length);
   }
 
+  var pindahtab;
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -69,6 +71,9 @@ class _ContentTrainingState extends State<ContentTraining>
             child: PageView(
               onPageChanged: (index) async {
                 print('slide tab $index');
+                setState(() {
+                  pindahtab = index;
+                });
 
                 if (!_tabController.indexIsChanging) {
                   print('ok');
@@ -78,12 +83,15 @@ class _ContentTrainingState extends State<ContentTraining>
                 }
               },
               controller: _pageViewController,
-              children: listKategori
-                  .map(
-                    (e) => BuilderTraining(
-                        key: PageStorageKey('listTraining$e'), type: e),
-                  )
-                  .toList(),
+              children: listKategori.map(
+                (e) {
+                  print('tessss');
+                  print(e);
+
+                  return BuilderTraining(
+                      key: PageStorageKey('listTraining$e'), type: e);
+                },
+              ).toList(),
             ),
           )
         ],

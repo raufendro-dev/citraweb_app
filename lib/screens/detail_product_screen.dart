@@ -301,11 +301,21 @@ class _DetailProductScreenState extends State<DetailProductScreen>
                             color: Theme.of(context).colorScheme.primary,
                             padding: const EdgeInsets.all(6),
                             margin: const EdgeInsets.only(bottom: 10),
-                            child: Text(
-                              detail['status_barang'],
-                              style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onError),
-                            ),
+                            child: detail['status_barang'] != 'INDEN'
+                                ? Text(
+                                    detail['status_barang'],
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onError),
+                                  )
+                                : Text(
+                                    'PRE ORDER',
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onError),
+                                  ),
                           ),
                       ],
                     ),
