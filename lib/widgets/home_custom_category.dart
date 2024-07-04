@@ -511,8 +511,7 @@ class HomeCustomCategory extends StatelessWidget {
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 2),
                                             child: Text(
-                                              customCategory['produk'][index]
-                                                  ['status_barang'],
+                                              "PRE ORDER",
                                               style: TextStyle(
                                                   color: Theme.of(context)
                                                       .colorScheme

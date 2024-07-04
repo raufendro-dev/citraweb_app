@@ -714,8 +714,7 @@ class _DetailProductScreenState extends State<DetailProductScreen>
                                                               .symmetric(
                                                           horizontal: 2),
                                                       child: Text(
-                                                        snapshot.data![index]
-                                                            ['status_barang'],
+                                                        "PRE ORDER",
                                                         style: TextStyle(
                                                             color: Theme.of(
                                                                     context)
