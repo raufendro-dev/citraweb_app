@@ -775,6 +775,10 @@ class __FormRmaSerialState extends State<FormRmaSerial> {
                                         setState(() {
                                           listRmaSession = value;
                                         });
+
+                                        setState(() {
+                                          dataSerial.clear();
+                                        });
                                         controllerKeluhan.clear();
                                         controllerKelengkapan.clear();
                                         setState(() {

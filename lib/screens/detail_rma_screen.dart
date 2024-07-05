@@ -175,12 +175,12 @@ class DetailRmaScreen extends StatelessWidget {
                                   Text(
                                       'Kelengkapan : ' + barang['kelengkapan']),
                                   Text('Perbaikan : ' + barang['perbaikan']),
-                                  const Text('Penggantian :'),
-                                  if (barang['ada_data_pergantian'])
-                                    ...barang['data_pergantian'].map((ganti) =>
-                                        Text(ganti['type'] +
-                                            ' ' +
-                                            ganti['keterangan'])),
+                                  // const Text('Penggantian :'),
+                                  // if (barang['ada_data_pergantian'])
+                                  //   ...barang['data_pergantian'].map((ganti) =>
+                                  //       Text(ganti['type'] +
+                                  //           ' ' +
+                                  //           ganti['keterangan'])),
                                   if (barang['gambar_segel'] != null &&
                                       barang['gambar_segel'] != "")
                                     const Text('Gambar Segel :'),
