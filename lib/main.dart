@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mikrotik/providers/cart_provider.dart';
+import 'package:mikrotik/providers/alamat_provider.dart';
 import 'package:mikrotik/providers/profile_provider.dart';
 import 'package:mikrotik/screens/detail_artikel_screen.dart';
 import 'package:mikrotik/screens/detail_training_screen.dart';
@@ -21,6 +22,7 @@ enum slideDirection {
   toTop,
   toLeft,
 }
+// function to make fibonacci
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -37,6 +39,9 @@ class MyApp extends StatelessWidget {
           ),
           ChangeNotifierProvider(
             create: (ctx) => ProfileProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (ctx) => alamatProvider(),
           ),
         ],
         child: MaterialApp(
@@ -67,10 +72,10 @@ class MyApp extends StatelessWidget {
               ),
               // colorScheme: ColorScheme(primary: primary, primaryVariant: primaryVariant, secondary: secondary, secondaryVariant: secondaryVariant, surface: surface, background: background, error: error, onPrimary: onPrimary, onSecondary: onSecondary, onSurface: onSurface, onBackground: onBackground, onError: onError, brightness: brightness)
             ),
-            home: const HomePageScreen(title: 'Citraweb'),
+            home: const HomePageScreen(title: 'Citraweb', indexPindah: 0),
             routes: {
               HomePageScreen.routeName: (ctx) =>
-                  const HomePageScreen(title: 'Citraweb'),
+                  const HomePageScreen(title: 'Citraweb', indexPindah: 0),
               DetailProductScreen.routeName: (ctx) => const DetailProductScreen(
                     productId: 0,
                   ),

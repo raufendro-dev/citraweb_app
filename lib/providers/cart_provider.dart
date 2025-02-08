@@ -4,6 +4,8 @@ class CartProvider with ChangeNotifier {
   int jumlahItem = 0;
   String totalHarga = '0';
   String ppn = '0';
+  String diskon = '0';
+
   String totalSebelumOngkir = '0';
   List<dynamic> dataBarang = [];
 
@@ -24,6 +26,11 @@ class CartProvider with ChangeNotifier {
 
   void setPpn(String x) {
     ppn = x;
+    notifyListeners();
+  }
+
+  void setDiskon(String x) {
+    diskon = x;
     notifyListeners();
   }
 

@@ -14,7 +14,7 @@ import 'package:mikrotik/screens/login_screen.dart';
 import 'package:mikrotik/services/auth_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class DetailTrainingScreen extends StatelessWidget {
+class DetailTrainingScreen extends StatefulWidget {
   DetailTrainingScreen(
       {Key? key, required this.id, this.initialData = const {}})
       : super(key: key);
@@ -22,15 +22,32 @@ class DetailTrainingScreen extends StatelessWidget {
   final Map<String, dynamic> initialData;
   static const routeName = 'DetailTrainingScreen';
 
+  @override
+  State<DetailTrainingScreen> createState() => _DetailTrainingScreenState();
+}
+
+class _DetailTrainingScreenState extends State<DetailTrainingScreen> {
   late final futureProfile = fetchProfile();
+
+  var iduser;
+
+  var sessid;
 
   Future<Map<String, dynamic>> fetchTraining() async {
     Map<String, dynamic> listTraining = {};
 
-    final responseTraining = await http.get(Uri.parse(Config.baseUrlApi +
-        'app-api/training/detail/?id=$id&key=0cc7da679bea04fea453c8062e06514d'));
     print(Uri.parse(Config.baseUrlApi +
-        'app-api/training/detail/?id=$id&key=0cc7da679bea04fea453c8062e06514d'));
+        'app-api/training/detail/?id=${widget.id}&key=0cc7da679bea04fea453c8062e06514d&iduser=$iduser&sess_id=$sessid'));
+    // print(await auth.strDataLogin);
+
+    print('jancukkk');
+    print(iduser);
+
+    //! tambah session id
+
+    final responseTraining = await http.get(Uri.parse(Config.baseUrlApi +
+        'app-api/training/detail/?id=${widget.id}&key=0cc7da679bea04fea453c8062e06514d&iduser=$iduser&sess_id=$sessid'));
+
     if (responseTraining.statusCode == 200) {
       print('fetchTraining');
       final Map training = jsonDecode(responseTraining.body);
@@ -63,8 +80,36 @@ class DetailTrainingScreen extends StatelessWidget {
     return profileObj;
   }
 
+  cek() async {
+    var auth = await AuthService();
+    var dataLogin = jsonDecode((await AuthService().strDataLogin).toString());
+    var _iduser = await auth.idUser;
+    var _sessid = await auth.sessId;
+
+    if (dataLogin != null) {
+      setState(() {
+        iduser = _iduser;
+        sessid = _sessid;
+      });
+    } else {
+      setState(() {
+        iduser = '0';
+        sessid = '0';
+      });
+      print('blokk');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    cek();
+    fetchTraining();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final auth = AuthService();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -81,7 +126,8 @@ class DetailTrainingScreen extends StatelessWidget {
             const Duration(milliseconds: 250),
             () => fetchTraining(),
           ),
-          initialData: initialData.isNotEmpty ? initialData : null,
+          initialData:
+              widget.initialData.isNotEmpty ? widget.initialData : null,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               var training = snapshot.data!;
@@ -143,7 +189,12 @@ class DetailTrainingScreen extends StatelessWidget {
                           data: '<b>Kapasitas:</b> ' +
                               training['kapasitas'] +
                               ' orang'),
-                      Html(data: '<b>Lokasi:</b><br>' + training['lokasi']),
+                      Html(
+                        data: '<b>Lokasi:</b><br>' + training['lokasi'],
+                        onLinkTap: (url, _, __, ___) {
+                          launchUrl(Uri.parse(url.toString()));
+                        },
+                      ),
                       Html(
                         data: training['keterangan']
                             .toString()
@@ -161,13 +212,16 @@ class DetailTrainingScreen extends StatelessWidget {
                             RenderContext context,
                             Map<String, String> attributes,
                             dom.Element? element) async {
-                          if (await canLaunch(url!)) {
-                            await launch(
-                              url,
-                            );
-                          } else {
-                            throw 'Could not launch $url';
-                          }
+                          print(url);
+                          await launchUrl(Uri.parse(url!),
+                              mode: LaunchMode.externalApplication);
+                          // if (await canLaunch(url!)) {
+                          //   await launch(
+                          //     url,
+                          //   );
+                          // } else {
+                          //   throw 'Could not launch $url';
+                          // }
                         },
                       ),
                       Html(data: '<b>Materi:</b><br>' + training['materi']),
@@ -176,6 +230,7 @@ class DetailTrainingScreen extends StatelessWidget {
                         customRender: {
                           "iframe": (context, child) {
                             var url = context.tree.attributes['src']!;
+                            print(url);
                             if (url.contains('maps')) {
                               return child;
                             }
@@ -193,7 +248,7 @@ class DetailTrainingScreen extends StatelessWidget {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => DaftarTrainingScreen(
-                                  id: id,
+                                  id: widget.id,
                                   training: training,
                                   profileObj: profileObj,
                                 ),
@@ -214,9 +269,9 @@ class DetailTrainingScreen extends StatelessWidget {
                                     (Route<dynamic> route) => false,
                                     arguments: 1);
 
-                                Navigator.pushNamed(
-                                    context, DetailTrainingScreen.routeName,
-                                    arguments: id);
+                                Navigator.of(context).pushNamed(
+                                    DetailTrainingScreen.routeName,
+                                    arguments: widget.id);
                               }
                             });
                           }
@@ -230,9 +285,32 @@ class DetailTrainingScreen extends StatelessWidget {
                         children: [
                           OutlinedButton(
                             onPressed: () async {
-                              var url = training['training_undangan'];
-                              await launchUrl(Uri.parse(url),
-                                  mode: LaunchMode.externalApplication);
+                              if (await AuthService().cekLogin(context)) {
+                                var url = training['training_undangan'];
+                                await launchUrl(Uri.parse(url),
+                                    mode: LaunchMode.externalApplication);
+                              } else {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute<void>(
+                                      builder: (BuildContext context) =>
+                                          LoginScreen(),
+                                    )).then((value) async {
+                                  if ((await AuthService().strDataLogin)
+                                      .toString()
+                                      .isNotEmpty) {
+                                    Navigator.of(context)
+                                        .pushNamedAndRemoveUntil(
+                                            HomePageScreen.routeName,
+                                            (Route<dynamic> route) => false,
+                                            arguments: 1);
+
+                                    Navigator.of(context).pushNamed(
+                                        DetailTrainingScreen.routeName,
+                                        arguments: widget.id);
+                                  }
+                                });
+                              }
                               // if (await canLaunch(url)) {
                               //   await launch(
                               //     url,
@@ -251,9 +329,32 @@ class DetailTrainingScreen extends StatelessWidget {
                           const SizedBox(width: 16),
                           OutlinedButton(
                             onPressed: () async {
-                              var url = training['training_brosur'];
-                              await launchUrl(Uri.parse(url),
-                                  mode: LaunchMode.externalApplication);
+                              if (await AuthService().cekLogin(context)) {
+                                var url = training['training_brosur'];
+                                await launchUrl(Uri.parse(url),
+                                    mode: LaunchMode.externalApplication);
+                              } else {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute<void>(
+                                      builder: (BuildContext context) =>
+                                          LoginScreen(),
+                                    )).then((value) async {
+                                  if ((await AuthService().strDataLogin)
+                                      .toString()
+                                      .isNotEmpty) {
+                                    Navigator.of(context)
+                                        .pushNamedAndRemoveUntil(
+                                            HomePageScreen.routeName,
+                                            (Route<dynamic> route) => false,
+                                            arguments: 1);
+
+                                    Navigator.of(context).pushNamed(
+                                        DetailTrainingScreen.routeName,
+                                        arguments: widget.id);
+                                  }
+                                });
+                              }
                               // if (await canLaunch(url)) {
                               //   await launch(
                               //     url,

@@ -54,14 +54,16 @@ class KontakScreen extends StatelessWidget {
                       RenderContext context,
                       Map<String, String> attributes,
                       dom.Element? element) async {
+                    await launchUrl(Uri.parse(url!),
+                        mode: LaunchMode.externalApplication);
                     //open URL in webview, or launch URL in browser, or any other logic here
-                    if (await canLaunch(url!)) {
-                      await launch(
-                        url,
-                      );
-                    } else {
-                      throw 'Could not launch $url';
-                    }
+                    // if (await canLaunch(url!)) {
+                    //   await launch(
+                    //     url,
+                    //   );
+                    // } else {
+                    //   throw 'Could not launch $url';
+                    // }
                   },
                 ),
               ),

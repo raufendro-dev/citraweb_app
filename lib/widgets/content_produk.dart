@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:mikrotik/services/auth_service.dart';
 import 'package:mikrotik/widgets/shimmer_widget.dart';
 import 'dart:convert';
 
@@ -30,6 +31,7 @@ class _ContentProdukState extends State<ContentProduk>
 
   int curentPage = 1;
   int totalPage = 1;
+  String dropdownValue = 'Terendah';
 
   Future<List<BannerModel>> fetchBanner() async {
     final List<BannerModel> listBanner = [];
@@ -50,17 +52,41 @@ class _ContentProdukState extends State<ContentProduk>
     return listBanner;
   }
 
+  bool sudahLogin = false;
+  cekLogin() async {
+    AuthService().cekLogin(context).then((value) async {
+      if (value) {
+        setState(() {
+          sudahLogin = value;
+        });
+      }
+    });
+    print('sudahLogin');
+    print(sudahLogin);
+  }
+
   Future<List<Map<String, dynamic>>> fetchProduk(
       {bool loadMore = false, List listLama = const []}) async {
     final page = loadMore ? '&page=${curentPage + 1}' : '&page=$curentPage';
     final List<Map<String, dynamic>> listProduk = [];
+    var a;
+    if (dropdownValue == 'Terendah') {
+      setState(() {
+        a = 'asc';
+      });
+    } else if (dropdownValue == 'Tertinggi') {
+      setState(() {
+        a = 'desc';
+      });
+    }
 
     final responseProduk = await http.get(Uri.parse(Config.baseUrlApi +
-        'app-api/produk/?key=0cc7da679bea04fea453c8062e06514d$page'));
+        'app-api/produk/?key=0cc7da679bea04fea453c8062e06514d$page' +
+        '&short=1&order=$a'));
     print("rauf");
-    print(Config.baseUrlApi.toString() +
-        'app-api/produk/?key=0cc7da679bea04fea453c8062e06514d' +
-        page);
+    print(Config.baseUrlApi +
+        'app-api/produk/?key=0cc7da679bea04fea453c8062e06514d$page' +
+        '&short=1&order=$dropdownValue');
     if (responseProduk.statusCode == 200) {
       print('fetchProduk');
       final Map produk = jsonDecode(responseProduk.body);
@@ -100,6 +126,7 @@ class _ContentProdukState extends State<ContentProduk>
   @override
   void initState() {
     super.initState();
+    cekLogin();
     futureBanner = fetchBanner();
     futureProduk = fetchProduk();
   }
@@ -113,6 +140,45 @@ class _ContentProdukState extends State<ContentProduk>
       onRefresh: _refresh,
       child: Column(
         children: [
+          Container(
+            height: 37,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text("Urutkan berdasarkan harga "),
+                  DropdownButton<String>(
+                    value: dropdownValue,
+                    icon: Icon(Icons.arrow_drop_down),
+                    iconSize: 24,
+                    elevation: 16,
+                    style: TextStyle(color: Colors.black),
+                    underline: Container(
+                      // Add this line to remove underline
+                      height: 0,
+                      color: Colors.transparent,
+                    ),
+                    onChanged: (String? newValue) async {
+                      setState(() {
+                        dropdownValue = newValue!;
+                        fetchProduk();
+                        _refresh();
+                      });
+                    },
+                    items: <String>['Terendah', 'Tertinggi']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            ),
+          ),
           // cekscroll == false
           //     ?
           // HomeSilder(futureBanner: futureBanner, controller: _controllerBanner),
@@ -192,6 +258,8 @@ class _ContentProdukState extends State<ContentProduk>
                             curentPage < totalPage
                                 ? snapshot.data!.length + 2
                                 : snapshot.data!.length, (index) {
+                          // print('Grangaan');
+                          // print(snapshot.data![index]['id']);
                           return curentPage < totalPage &&
                                   index + 1 > snapshot.data!.length
                               ? Card(
@@ -269,94 +337,161 @@ class _ContentProdukState extends State<ContentProduk>
                                               ),
                                             ),
                                           ),
-                                          if (snapshot.data![index]
-                                                  ['status_barang'] ==
-                                              'HABIS')
-                                            Positioned(
-                                              top: 2,
-                                              right: 1,
-                                              child: Container(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .error,
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 2),
-                                                child: Text(
-                                                  snapshot.data![index]
-                                                      ['status_barang'],
-                                                  style: TextStyle(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .onError),
-                                                ),
+                                          Positioned(
+                                            top: 2,
+                                            left: 1,
+                                            child: Container(
+                                              color: snapshot.data![index]
+                                                          ['app_kiri_atas'] ==
+                                                      ""
+                                                  ? Colors.transparent
+                                                  : Colors.blue,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 2),
+                                              child: Text(
+                                                snapshot.data![index]
+                                                    ['app_kiri_atas'],
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onError),
                                               ),
                                             ),
-                                          if (snapshot.data![index]
-                                                  ['status_barang'] ==
-                                              'INDEN')
-                                            Positioned(
-                                              top: 2,
-                                              right: 1,
-                                              child: Container(
-                                                color: Colors.blue,
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 2),
-                                                child: Text(
-                                                  "PRE ORDER",
-                                                  style: TextStyle(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .onError),
-                                                ),
+                                          ),
+                                          Positioned(
+                                            top: 2,
+                                            right: 1,
+                                            child: Container(
+                                              color: snapshot.data![index]
+                                                          ['app_kanan_atas'] ==
+                                                      ""
+                                                  ? Colors.transparent
+                                                  : Colors.orange,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 2),
+                                              child: Text(
+                                                snapshot.data![index]
+                                                    ['app_kanan_atas'],
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onError),
                                               ),
                                             ),
-                                          if (snapshot.data![index]
-                                                  ['status_barang'] ==
-                                              "CALL TO BUY")
-                                            Positioned(
-                                              top: 2,
-                                              right: 1,
-                                              child: Container(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary,
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 2),
-                                                child: Text(
-                                                  "Call to buy",
-                                                  style: TextStyle(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .onError),
-                                                ),
+                                          ),
+                                          Positioned(
+                                            bottom: 2,
+                                            left: 1,
+                                            child: Container(
+                                              color: snapshot.data![index]
+                                                          ['app_kiri_bawah'] ==
+                                                      "OUT OF STOCK"
+                                                  ? Colors.orange
+                                                  : snapshot.data![index][
+                                                              'app_kiri_bawah'] ==
+                                                          "PRE ORDER"
+                                                      ? Colors.green
+                                                      : Colors.transparent,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 2),
+                                              child: Text(
+                                                snapshot.data![index]
+                                                    ['app_kiri_bawah'],
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onError),
                                               ),
-                                            )
+                                            ),
+                                          ),
+
+                                          // if (snapshot.data![index]['status_barang'] ==
+                                          //     'HABIS')
+                                          //   Positioned(
+                                          //     top: 2,
+                                          //     right: 1,
+                                          //     child: Container(
+                                          //       color:
+                                          //           Theme.of(context).colorScheme.error,
+                                          //       padding: const EdgeInsets.symmetric(
+                                          //           horizontal: 2),
+                                          //       child: Text(
+                                          //         snapshot.data![index]
+                                          //             ['status_barang'],
+                                          //         style: TextStyle(
+                                          //             color: Theme.of(context)
+                                          //                 .colorScheme
+                                          //                 .onError),
+                                          //       ),
+                                          //     ),
+                                          //   ),
+                                          // if (snapshot.data![index]['status_barang'] ==
+                                          //     'INDEN')
+                                          //   Positioned(
+                                          //     top: 2,
+                                          //     right: 1,
+                                          //     child: Container(
+                                          //       color: Colors.blue,
+                                          //       padding: const EdgeInsets.symmetric(
+                                          //           horizontal: 2),
+                                          //       child: Text(
+                                          //         "PRE ORDER",
+                                          //         style: TextStyle(
+                                          //             color: Theme.of(context)
+                                          //                 .colorScheme
+                                          //                 .onError),
+                                          //       ),
+                                          //     ),
+                                          //   ),
+                                          // if (snapshot.data![index]['status_barang'] ==
+                                          //     'CALL TO BUY')
+                                          //   Positioned(
+                                          //     top: 2,
+                                          //     right: 1,
+                                          //     child: Container(
+                                          //       color: Theme.of(context)
+                                          //           .colorScheme
+                                          //           .primary,
+                                          //       padding: const EdgeInsets.symmetric(
+                                          //           horizontal: 2),
+                                          //       child: Text(
+                                          //         snapshot.data![index]
+                                          //             ['status_barang'],
+                                          //         style: TextStyle(
+                                          //             color: Theme.of(context)
+                                          //                 .colorScheme
+                                          //                 .onError),
+                                          //       ),
+                                          //     ),
+                                          //   ),
                                         ]),
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0, vertical: 3),
+                                              horizontal: 8.0, vertical: 4),
                                           child: Column(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.stretch,
+                                                CrossAxisAlignment.start,
+                                            // crossAxisAlignment:
+                                            //     CrossAxisAlignment.stretch,
                                             children: [
-                                              Text(
-                                                snapshot.data![index]
-                                                    ['nama_kategori'],
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyText2!
-                                                    .copyWith(
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .primary,
-                                                        fontWeight:
-                                                            FontWeight.w600),
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 1,
-                                              ),
+                                              // Text(
+                                              //   snapshot.data![index]
+                                              //       ['nama_kategori'],
+                                              //   style: Theme.of(context)
+                                              //       .textTheme
+                                              //       .bodyText2!
+                                              //       .copyWith(
+                                              //           color: Theme.of(context)
+                                              //               .colorScheme
+                                              //               .primary,
+                                              //           fontWeight:
+                                              //               FontWeight.w600),
+                                              //   overflow: TextOverflow.ellipsis,
+                                              //   maxLines: 1,
+                                              // ),
                                               Text(
                                                 snapshot.data![index]['nama'],
                                                 style: Theme.of(context)
@@ -368,33 +503,235 @@ class _ContentProdukState extends State<ContentProduk>
                                               const SizedBox(
                                                 height: 4,
                                               ),
-                                              snapshot.data![index]
-                                                          ['harga_rp'] !=
-                                                      "0"
-                                                  ? Text(
-                                                      snapshot.data![index]
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 2),
+                                                color: snapshot.data![index][
+                                                            'app_txt_ganti_harga'] ==
+                                                        "DISCONTINUED"
+                                                    ? Colors.grey
+                                                    : snapshot.data![index][
+                                                                'app_txt_ganti_harga'] ==
+                                                            "CALL TO BUY"
+                                                        ? Colors.black
+                                                        : snapshot.data![index][
+                                                                        'app_txt_ganti_harga'] ==
+                                                                    "LOGIN TO CHECK PRICE" &&
+                                                                sudahLogin ==
+                                                                    false
+                                                            ? Colors.yellow
+                                                            : snapshot.data![index]['app_txt_ganti_harga'] ==
+                                                                        "LOGIN TO CHECK PRICE" &&
+                                                                    sudahLogin ==
+                                                                        true
+                                                                ? Colors
+                                                                    .transparent
+                                                                : Colors.transparent,
+                                                child: Text(
+                                                  snapshot.data![index][
+                                                              'app_txt_ganti_harga'] ==
+                                                          ""
+                                                      ? snapshot.data![index]
                                                               ['harga_rp']
-                                                          .replaceAll(
-                                                              ',00', ''),
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText2!
-                                                          .copyWith(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .colorScheme
-                                                                  .error),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      maxLines: 1,
-                                                    )
-                                                  : Container()
+                                                          .toString()
+                                                      : snapshot.data![index][
+                                                                      'app_txt_ganti_harga'] ==
+                                                                  "LOGIN TO CHECK PRICE" &&
+                                                              sudahLogin == true
+                                                          ? snapshot
+                                                              .data![index]
+                                                                  ['harga_rp']
+                                                              .toString()
+                                                          : snapshot
+                                                                  .data![index][
+                                                              'app_txt_ganti_harga'],
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyText2!
+                                                      .copyWith(
+                                                          color: snapshot.data![
+                                                                          index]
+                                                                      [
+                                                                      'app_txt_ganti_harga'] ==
+                                                                  "DISCONTINUED"
+                                                              ? Colors.black
+                                                              : snapshot.data![index]
+                                                                          [
+                                                                          'app_txt_ganti_harga'] ==
+                                                                      "CALL TO BUY"
+                                                                  ? Colors.white
+                                                                  : snapshot.data![index]
+                                                                              [
+                                                                              'app_txt_ganti_harga'] ==
+                                                                          "LOGIN TO CHECK PRICE"
+                                                                      ? Colors
+                                                                          .black
+                                                                      : Colors
+                                                                          .black),
+                                                ),
+                                              )
                                             ],
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
+                                  // child:
+
+                                  // Card(
+                                  //   clipBehavior: Clip.hardEdge,
+                                  //   elevation: 4,
+                                  //   child: Column(
+                                  //     mainAxisSize: MainAxisSize.max,
+                                  //     children: [
+                                  //       Stack(children: [
+                                  //         SizedBox(
+                                  //           width: double.infinity,
+                                  //           child: AspectRatio(
+                                  //             aspectRatio: 1,
+                                  //             child: CachedNetworkImage(
+                                  //               imageUrl: Config().mktToCst(
+                                  //                   snapshot.data![index]
+                                  //                       ['gambar_kecil']),
+                                  //               placeholder: (context, url) =>
+                                  //                   const Center(
+                                  //                       child:
+                                  //                           CircularProgressIndicator(
+                                  //                 strokeWidth: 2,
+                                  //               )),
+                                  //               errorWidget:
+                                  //                   (context, url, error) =>
+                                  //                       const Icon(Icons.error),
+                                  //             ),
+                                  //           ),
+                                  //         ),
+                                  //         if (snapshot.data![index]
+                                  //                 ['status_barang'] ==
+                                  //             'HABIS')
+                                  //           Positioned(
+                                  //             top: 2,
+                                  //             right: 1,
+                                  //             child: Container(
+                                  //               color: Theme.of(context)
+                                  //                   .colorScheme
+                                  //                   .error,
+                                  //               padding:
+                                  //                   const EdgeInsets.symmetric(
+                                  //                       horizontal: 2),
+                                  //               child: Text(
+                                  //                 snapshot.data![index]
+                                  //                     ['status_barang'],
+                                  //                 style: TextStyle(
+                                  //                     color: Theme.of(context)
+                                  //                         .colorScheme
+                                  //                         .onError),
+                                  //               ),
+                                  //             ),
+                                  //           ),
+                                  //         if (snapshot.data![index]
+                                  //                 ['status_barang'] ==
+                                  //             'INDEN')
+                                  //           Positioned(
+                                  //             top: 2,
+                                  //             right: 1,
+                                  //             child: Container(
+                                  //               color: Colors.blue,
+                                  //               padding:
+                                  //                   const EdgeInsets.symmetric(
+                                  //                       horizontal: 2),
+                                  //               child: Text(
+                                  //                 "PRE ORDER",
+                                  //                 style: TextStyle(
+                                  //                     color: Theme.of(context)
+                                  //                         .colorScheme
+                                  //                         .onError),
+                                  //               ),
+                                  //             ),
+                                  //           ),
+                                  //         if (snapshot.data![index]
+                                  //                 ['status_barang'] ==
+                                  //             "CALL TO BUY")
+                                  //           Positioned(
+                                  //             top: 2,
+                                  //             right: 1,
+                                  //             child: Container(
+                                  //               color: Theme.of(context)
+                                  //                   .colorScheme
+                                  //                   .primary,
+                                  //               padding:
+                                  //                   const EdgeInsets.symmetric(
+                                  //                       horizontal: 2),
+                                  //               child: Text(
+                                  //                 "Call to buy",
+                                  //                 style: TextStyle(
+                                  //                     color: Theme.of(context)
+                                  //                         .colorScheme
+                                  //                         .onError),
+                                  //               ),
+                                  //             ),
+                                  //           )
+                                  //       ]),
+                                  //       Padding(
+                                  //         padding: const EdgeInsets.symmetric(
+                                  //             horizontal: 8.0, vertical: 3),
+                                  //         child: Column(
+                                  //           crossAxisAlignment:
+                                  //               CrossAxisAlignment.stretch,
+                                  //           children: [
+                                  //             Text(
+                                  //               snapshot.data![index]
+                                  //                   ['nama_kategori'],
+                                  //               style: Theme.of(context)
+                                  //                   .textTheme
+                                  //                   .bodyText2!
+                                  //                   .copyWith(
+                                  //                       color: Theme.of(context)
+                                  //                           .colorScheme
+                                  //                           .primary,
+                                  //                       fontWeight:
+                                  //                           FontWeight.w600),
+                                  //               overflow: TextOverflow.ellipsis,
+                                  //               maxLines: 1,
+                                  //             ),
+                                  //             Text(
+                                  //               snapshot.data![index]['nama'],
+                                  //               style: Theme.of(context)
+                                  //                   .textTheme
+                                  //                   .bodyText2,
+                                  //               overflow: TextOverflow.ellipsis,
+                                  //               maxLines: 1,
+                                  //             ),
+                                  //             const SizedBox(
+                                  //               height: 4,
+                                  //             ),
+                                  //             snapshot.data![index]
+                                  //                         ['harga_rp'] !=
+                                  //                     "0"
+                                  //                 ? Text(
+                                  //                     snapshot.data![index]
+                                  //                             ['harga_rp']
+                                  //                         .replaceAll(
+                                  //                             ',00', ''),
+                                  //                     style: Theme.of(context)
+                                  //                         .textTheme
+                                  //                         .bodyText2!
+                                  //                         .copyWith(
+                                  //                             color: Theme.of(
+                                  //                                     context)
+                                  //                                 .colorScheme
+                                  //                                 .error),
+                                  //                     overflow:
+                                  //                         TextOverflow.ellipsis,
+                                  //                     maxLines: 1,
+                                  //                   )
+                                  //                 : Container()
+                                  //           ],
+                                  //         ),
+                                  //       ),
+                                  //     ],
+                                  //   ),
+                                  // ),
                                 );
                         }),
                       ),

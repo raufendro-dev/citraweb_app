@@ -11,6 +11,8 @@ import '../constant/config.dart';
 import '../services/auth_service.dart';
 import '../main.dart';
 import 'dart:convert';
+import '../providers/alamat_provider.dart';
+import 'package:provider/provider.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({Key? key}) : super(key: key);
@@ -22,6 +24,7 @@ class CheckoutScreen extends StatefulWidget {
 class _CheckoutScreenState extends State<CheckoutScreen> {
   String totalHargaBarang = '0';
   String ppn = '0';
+  String diskon = '0';
   String ongkir = '0';
   String totalYangHarusDibayar = '0';
   String totalQtyBarang = '0';
@@ -55,6 +58,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     setState(() {
       totalHargaBarang = listCheckout.first['total_harga_barang'];
       ppn = listCheckout.first['ppn_rp'];
+      diskon = listCheckout.first['diskon_rp'];
       ongkir = listCheckout.first['ada_biaya_ongkir']
           ? listCheckout.first['data_ongkir'].first['ongkos_kirim']
           : '0';
@@ -122,10 +126,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void initState() {
     super.initState();
     futureCheckout = fetchCheckout();
+    Map<String, dynamic> jsonData =
+        Provider.of<alamatProvider>(context, listen: false).toJson();
+    setState(() {
+      isDiambil = jsonData['isDiambil'];
+      _mkIdTujuan = jsonData['MKid_tujuan'];
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic> jsonData =
+        Provider.of<alamatProvider>(context, listen: false).toJson();
+    print('ini cong');
+    print(jsonData);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Checkout'),
@@ -227,6 +241,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                         isDiambil = alamatPilihan['isDiambil'];
                                         _mkIdTujuan =
                                             alamatPilihan['MKid_tujuan'];
+                                        Provider.of<alamatProvider>(context,
+                                                listen: false)
+                                            .updateIsDiambil(isDiambil);
+                                        Provider.of<alamatProvider>(context,
+                                                listen: false)
+                                            .updateMKidTujuan(_mkIdTujuan);
                                       });
                                       futureCheckout = fetchCheckout();
                                     }
@@ -479,7 +499,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
-                                children: [const Text('PPN 10%'), Text(ppn)],
+                                children: [const Text('Diskon'), Text(diskon)],
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [const Text('PPN 11%'), Text(ppn)],
                               ),
                               const SizedBox(height: 8),
                               Row(

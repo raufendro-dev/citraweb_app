@@ -59,6 +59,7 @@ class _ContentProfileState extends State<ContentProfile>
 
   Future<List<Map<String, dynamic>>> fetchOrders(
       String id, String sessionId) async {
+    print('fetchOrders');
     final List<Map<String, dynamic>> listOrders = [];
 
     final responseOrders = await http.get(Uri.parse(Config.baseUrlApi +
@@ -103,6 +104,15 @@ class _ContentProfileState extends State<ContentProfile>
     return listTraining;
   }
 
+  Stream<List<Map<String, dynamic>>> streamOrders(
+      String MKid, String sessId) async* {
+    while (true) {
+      await Future.delayed(
+          Duration(seconds: 5)); // Poll every 5 seconds (optional)
+      yield await fetchOrders(MKid, sessId);
+    }
+  }
+
   Future<List<Map<String, dynamic>>> fetchRMA(
       String id, String sessionId) async {
     final List<Map<String, dynamic>> listRMA = [];
@@ -130,6 +140,7 @@ class _ContentProfileState extends State<ContentProfile>
   void initState() {
     super.initState();
     // isLogin = value;
+    //
     auth.strDataLogin.then((value) {
       print('datalogin');
       print(value);
@@ -309,8 +320,8 @@ class _ContentProfileState extends State<ContentProfile>
                                 // indent: 12,
                                 // endIndent: 12,
                               ),
-                              FutureBuilder<List<Map<String, dynamic>>>(
-                                future: fetchOrders(
+                              StreamBuilder<List<Map<String, dynamic>>>(
+                                stream: streamOrders(
                                     dataLogin['MKid'], dataLogin['sess_id']),
                                 builder: (context, snapshot) {
                                   if (snapshot.hasData) {
@@ -324,15 +335,15 @@ class _ContentProfileState extends State<ContentProfile>
                                               ListTile(
                                                 onTap: () {
                                                   print('orders');
-
                                                   Navigator.of(context).push(
-                                                      _createRoute(
-                                                          DetailPesananScreen(
-                                                              noNota: orders[
-                                                                      index]
-                                                                  ['no_nota']),
-                                                          slideDirection
-                                                              .toLeft));
+                                                    _createRoute(
+                                                      DetailPesananScreen(
+                                                        noNota: orders[index]
+                                                            ['no_nota'],
+                                                      ),
+                                                      slideDirection.toLeft,
+                                                    ),
+                                                  );
                                                 },
                                                 tileColor: Theme.of(context)
                                                     .colorScheme
@@ -344,10 +355,8 @@ class _ContentProfileState extends State<ContentProfile>
                                                 minVerticalPadding: 12,
                                                 title: Text(
                                                     orders[index]['tgl_order']),
-                                                subtitle: Text(
-                                                  orders[index]['status_txt'],
-                                                ),
-                                                // isThreeLine: true,
+                                                subtitle: Text(orders[index]
+                                                    ['status_txt']),
                                                 trailing: SizedBox(
                                                   width: 120,
                                                   child: Column(
@@ -365,14 +374,13 @@ class _ContentProfileState extends State<ContentProfile>
                                                       ),
                                                       const SizedBox(height: 6),
                                                       Text(
-                                                        'Rp ' +
-                                                            orders[index][
-                                                                'transaksi_rp'],
+                                                        'Rp ${orders[index]['transaksi_rp']}',
                                                         style: TextStyle(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .colorScheme
-                                                                .secondary),
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .secondary,
+                                                        ),
                                                       ),
                                                     ],
                                                   ),
@@ -391,21 +399,21 @@ class _ContentProfileState extends State<ContentProfile>
                                       );
                                     }
                                     return Container(
-                                        width: double.infinity,
-                                        alignment: Alignment.center,
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 24, horizontal: 0),
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .background,
-                                        child:
-                                            const Text('Tidak terdapat order'));
+                                      width: double.infinity,
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 24),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .background,
+                                      child: const Text('Tidak terdapat order'),
+                                    );
                                   }
                                   return Container(
                                     width: double.infinity,
                                     alignment: Alignment.center,
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 24, horizontal: 0),
+                                        vertical: 24),
                                     color: Theme.of(context)
                                         .colorScheme
                                         .background,
@@ -414,6 +422,111 @@ class _ContentProfileState extends State<ContentProfile>
                                   );
                                 },
                               ),
+                              // FutureBuilder<List<Map<String, dynamic>>>(
+                              //   future: fetchOrders(
+                              //       dataLogin['MKid'], dataLogin['sess_id']),
+                              //   builder: (context, snapshot) {
+                              //     if (snapshot.hasData) {
+                              //       final orders = snapshot.data!;
+                              //       if (orders.isNotEmpty) {
+                              //         return Column(
+                              //           children: List.generate(
+                              //             orders.length < 5 ? orders.length : 5,
+                              //             (index) => Column(
+                              //               children: [
+                              //                 ListTile(
+                              //                   onTap: () {
+                              //                     print('orders');
+
+                              //                     Navigator.of(context).push(
+                              //                         _createRoute(
+                              //                             DetailPesananScreen(
+                              //                                 noNota: orders[
+                              //                                         index]
+                              //                                     ['no_nota']),
+                              //                             slideDirection
+                              //                                 .toLeft));
+                              //                   },
+                              //                   tileColor: Theme.of(context)
+                              //                       .colorScheme
+                              //                       .background,
+                              //                   contentPadding:
+                              //                       const EdgeInsets.symmetric(
+                              //                           vertical: 0,
+                              //                           horizontal: 12),
+                              //                   minVerticalPadding: 12,
+                              //                   title: Text(
+                              //                       orders[index]['tgl_order']),
+                              //                   subtitle: Text(
+                              //                     orders[index]['status_txt'],
+                              //                   ),
+                              //                   // isThreeLine: true,
+                              //                   trailing: SizedBox(
+                              //                     width: 120,
+                              //                     child: Column(
+                              //                       crossAxisAlignment:
+                              //                           CrossAxisAlignment.end,
+                              //                       mainAxisAlignment:
+                              //                           MainAxisAlignment
+                              //                               .center,
+                              //                       children: [
+                              //                         Text(
+                              //                           orders[index]
+                              //                               ['no_nota'],
+                              //                           textAlign:
+                              //                               TextAlign.end,
+                              //                         ),
+                              //                         const SizedBox(height: 6),
+                              //                         Text(
+                              //                           'Rp ' +
+                              //                               orders[index][
+                              //                                   'transaksi_rp'],
+                              //                           style: TextStyle(
+                              //                               color: Theme.of(
+                              //                                       context)
+                              //                                   .colorScheme
+                              //                                   .secondary),
+                              //                         ),
+                              //                       ],
+                              //                     ),
+                              //                   ),
+                              //                   dense: true,
+                              //                 ),
+                              //                 if (index != 4)
+                              //                   const Divider(
+                              //                     height: 0,
+                              //                     indent: 12,
+                              //                     endIndent: 12,
+                              //                   ),
+                              //               ],
+                              //             ),
+                              //           ),
+                              //         );
+                              //       }
+                              //       return Container(
+                              //           width: double.infinity,
+                              //           alignment: Alignment.center,
+                              //           padding: const EdgeInsets.symmetric(
+                              //               vertical: 24, horizontal: 0),
+                              //           color: Theme.of(context)
+                              //               .colorScheme
+                              //               .background,
+                              //           child:
+                              //               const Text('Tidak terdapat order'));
+                              //     }
+                              //     return Container(
+                              //       width: double.infinity,
+                              //       alignment: Alignment.center,
+                              //       padding: const EdgeInsets.symmetric(
+                              //           vertical: 24, horizontal: 0),
+                              //       color: Theme.of(context)
+                              //           .colorScheme
+                              //           .background,
+                              //       child: const Center(
+                              //           child: CircularProgressIndicator()),
+                              //     );
+                              //   },
+                              // ),
                               const SizedBox(height: 16),
                               Container(
                                 padding:

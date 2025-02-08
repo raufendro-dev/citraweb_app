@@ -18,10 +18,13 @@ import '../constant/custom_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomePageScreen extends StatefulWidget {
-  const HomePageScreen({Key? key, required this.title}) : super(key: key);
+  const HomePageScreen(
+      {Key? key, required this.title, required this.indexPindah})
+      : super(key: key);
   static const routeName = 'HomePageScreen';
 
   final String title;
+  final int indexPindah;
 
   @override
   State<HomePageScreen> createState() => _HomePageScreenState();
@@ -51,6 +54,7 @@ class _HomePageScreenState extends State<HomePageScreen>
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.indexPindah;
 
     _pageController = PageController(initialPage: _selectedIndex);
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
@@ -73,6 +77,16 @@ class _HomePageScreenState extends State<HomePageScreen>
         }
       });
     });
+    // if (widget.indexPindah != 0) {
+    //   setState(() {
+    //     _selectedIndex = widget.indexPindah;
+    //     _pageController.animateToPage(
+    //       widget.indexPindah,
+    //       duration: Duration(milliseconds: 500),
+    //       curve: Curves.ease,
+    //     );
+    //   });
+    // }
   }
 
   DateTime currentBackPressTime =
@@ -147,7 +161,7 @@ class _HomePageScreenState extends State<HomePageScreen>
         label: Text("Tanya Kami"),
         backgroundColor: Theme.of(context).colorScheme.primary,
         onPressed: () {
-          String url = "https://wa.me/+628112039555/?text=Halo, Citraweb";
+          String url = "https://wa.me/+628112039555/?text=%20Halo%20Citraweb%2C%0A%20Nama%20%3A%20%0A%20Perusahaan%20%3A%20%0A%20Pertanyaan%20%3A%20";
           launch(url);
         },
       ),

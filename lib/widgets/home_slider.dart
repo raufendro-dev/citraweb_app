@@ -3,10 +3,31 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:mikrotik/screens/product_by_category_screen.dart';
 import '../models/banner_model.dart';
 import '../widgets/custom_curved.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:mikrotik/widgets/content_training.dart';
+import 'package:mikrotik/screens/home_page_screen.dart';
+
+Route _createRoute(page) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => page,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(1.0, 0.0);
+      const end = Offset.zero;
+      const curve = Curves.linear;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+      return SlideTransition(
+        position: animation.drive(tween),
+        child: child,
+      );
+    },
+    transitionDuration: const Duration(milliseconds: 250),
+  );
+}
 
 class HomeSilder extends StatefulWidget {
   const HomeSilder(
@@ -87,13 +108,36 @@ class _HomeSilderState extends State<HomeSilder> {
                                   borderRadius: BorderRadius.circular(8.0),
                                   child: GestureDetector(
                                     onTap: () async {
-                                      if (await canLaunch(e.link)) {
-                                        await launch(
-                                          e.link,
-                                        );
-                                      } else {
-                                        throw 'Could not launch ${e.link}';
+                                      print(e.link);
+                                      if (e.link
+                                          .contains("/produk/?kategori")) {
+                                        var ambil = e.link;
+                                        Navigator.of(context).push(_createRoute(
+                                            ProductByCategoryScreen(
+                                          idKategori: int.parse(ambil.replaceAll(
+                                              "https://citraweb.com/produk/?kategori=",
+                                              "")),
+                                          namaKategori: "Cari di Citraweb",
+                                        )));
+                                      } else if (e.link.contains("/training")) {
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute<void>(
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        HomePageScreen(
+                                                            title: 'Citraweb',
+                                                            indexPindah: 1)));
+                                        //   ContentTraining()
                                       }
+                                      // if (await canLaunch(e.link)) {
+                                      //   await launch(
+                                      //     e.link,
+                                      //   );
+
+                                      // } else {
+                                      //   throw 'Could not launch ${e.link}';
+                                      // }
                                     },
                                     child: Image.network(
                                       e.imageHiddenSmXsMd,

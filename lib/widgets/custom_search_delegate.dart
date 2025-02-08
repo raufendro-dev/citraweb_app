@@ -91,48 +91,81 @@ class CustomSearchDelegate extends SearchDelegate {
     // throw UnimplementedError();
   }
 
+  Future<List<Map<String, dynamic>>> fetchSearchProduk(String query) async {
+    final List<Map<String, dynamic>> listProduk = [];
+
+    final responseProduk = await http.get(Uri.parse(Config.baseUrlApi +
+        'app-api/produk/search/?search=$query&key=0cc7da679bea04fea453c8062e06514d'));
+    print(Uri.parse(Config.baseUrlApi +
+        'app-api/produk/search/?search=$query&key=0cc7da679bea04fea453c8062e06514d'));
+    if (responseProduk.statusCode == 200) {
+      print('fetchSearchProduk');
+      final Map produk = jsonDecode(responseProduk.body);
+      if (produk['data'].isNotEmpty) {
+        for (var infoItem in produk['data']) {
+          listProduk.add(infoItem);
+        }
+      }
+    } else {
+      print('Failed to load Produk Baru');
+    }
+    return listProduk;
+  }
+
   @override
   Widget buildSuggestions(BuildContext context) {
-    print(kategori);
-    return FutureBuilder<List<Map<String, dynamic>>>(
-        future: HomeCategroy().fetchCategory(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final kategori = snapshot.data!
-                .where((element) => element['nama']
-                    .toString()
-                    .toLowerCase()
-                    .contains(query.toLowerCase()))
-                .toList();
+    // return Container();
+    print("ini cuk");
+    print(query);
 
-            print(kategori);
-            return ListView.builder(
-              itemCount: kategori.length,
-              itemBuilder: (contex, index) {
-                return ListTile(
-                  title: Text(kategori[index]['nama']),
-                  onTap: () {
-                    // query = 'Kategori ' + kategori[index]['nama'];
-                    // showResults(context);
-                    close(context, null);
+    if (query != '') {
+      return FutureBuilder<List<Map<String, dynamic>>>(
+          // future: HomeCategroy().fetchCategory(),
+          future: fetchSearchProduk(query),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final kategori = snapshot.data!
+                  .where((element) => element['nama']
+                      .toString()
+                      .toLowerCase()
+                      .contains(query.toLowerCase()))
+                  .toList();
 
-                    Navigator.of(context)
-                        .push(_createRoute(ProductByCategoryScreen(
-                      idKategori: int.parse(kategori[index]['id']),
-                      namaKategori: kategori[index]['nama'],
-                    )));
-                  },
-                  dense: true,
-                );
-              },
+              print(kategori);
+              return ListView.builder(
+                itemCount: kategori.length,
+                itemBuilder: (contex, index) {
+                  return ListTile(
+                    title: Text(kategori[index]['nama']),
+                    onTap: () {
+                      // query = 'Kategori ' + kategori[index]['nama'];
+                      // showResults(context);
+                      close(context, null);
+                      Navigator.of(context)
+                          .push(_createRoute(DetailProductScreen(
+                        productId: int.parse(kategori[index]['id']),
+                      )));
+
+                      // Navigator.of(context)
+                      //     .push(_createRoute(ProductByCategoryScreen(
+                      //   idKategori: int.parse(kategori[index]['id']),
+                      //   namaKategori: kategori[index]['nama'],
+                      // )));
+                    },
+                    dense: true,
+                  );
+                },
+              );
+            }
+
+            return const Center(
+              child: CircularProgressIndicator(),
             );
-          }
-
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        });
-    // throw UnimplementedError();
+          });
+    } else {
+      return Container();
+    }
+    throw UnimplementedError();
   }
 
   Route _createRoute(page) {
@@ -186,13 +219,27 @@ class _ResultPageState extends State<ResultPage>
     );
   }
 
+  String dropdownValue = 'Terendah';
+
   Future<List<Map<String, dynamic>>> fetchSearchProduk(String query) async {
     final List<Map<String, dynamic>> listProduk = [];
+    var a;
+    if (dropdownValue == 'Terendah') {
+      setState(() {
+        a = 'asc';
+      });
+    } else if (dropdownValue == 'Tertinggi') {
+      setState(() {
+        a = 'desc';
+      });
+    }
 
     final responseProduk = await http.get(Uri.parse(Config.baseUrlApi +
-        'app-api/produk/search/?search=$query&key=0cc7da679bea04fea453c8062e06514d'));
+        'app-api/produk/search/?search=$query&key=0cc7da679bea04fea453c8062e06514d' +
+        '&short=1&order=$a'));
     print(Uri.parse(Config.baseUrlApi +
-        'app-api/produk/search/?search=$query&key=0cc7da679bea04fea453c8062e06514d'));
+        'app-api/produk/search/?search=$query&key=0cc7da679bea04fea453c8062e06514d' +
+        '&short=1&order=$a'));
     if (responseProduk.statusCode == 200) {
       print('fetchSearchProduk');
       final Map produk = jsonDecode(responseProduk.body);
@@ -207,169 +254,229 @@ class _ResultPageState extends State<ResultPage>
     return listProduk;
   }
 
+  Future<void> _refresh() async {
+    setState(() {
+      fetchSearchProduk(widget.query);
+    });
+    return Future.delayed(const Duration(seconds: 1));
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return FutureBuilder<List<Map>>(
-        future: fetchSearchProduk(widget.query),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final listProduk = snapshot.data!;
-
-            if (listProduk.isEmpty) {
-              return const Center(child: Text('Produk tidak ditemukan.'));
-            }
-
-            return GridView.count(
-              // gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              //   crossAxisCount: 2,
-              // ),
-              // itemCount: listProduk.length,
-              mainAxisSpacing: 3,
-              crossAxisSpacing: 3,
-              childAspectRatio: 3 / 4,
-              crossAxisCount: 2,
-              children: List.generate(
-                listProduk.length,
-                (index) => GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(_createRoute(DetailProductScreen(
-                      productId: int.parse(listProduk[index]['id']),
-                    )));
-                    // CupertinoPageRoute(
-                    //     builder: (_) => DetailProductScreen(
-                    //         productId: int.parse(listProduk[index]['id'])));
+    return Column(
+      children: [
+        Container(
+          height: 37,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("Urutkan berdasarkan harga "),
+                DropdownButton<String>(
+                  value: dropdownValue,
+                  icon: Icon(Icons.arrow_drop_down),
+                  iconSize: 24,
+                  elevation: 16,
+                  style: TextStyle(color: Colors.black),
+                  underline: Container(
+                    // Add this line to remove underline
+                    height: 0,
+                    color: Colors.transparent,
+                  ),
+                  onChanged: (String? newValue) async {
+                    setState(() {
+                      dropdownValue = newValue!;
+                      fetchSearchProduk(widget.query);
+                      _refresh();
+                    });
                   },
-                  child: Card(
-                    clipBehavior: Clip.hardEdge,
-                    elevation: 4,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Stack(children: [
-                          SizedBox(
-                            width: double.infinity,
-                            child: AspectRatio(
-                              aspectRatio: 1,
-                              child: CachedNetworkImage(
-                                imageUrl: Config().mktToCst(
-                                    listProduk[index]['gambar_kecil']),
-                                placeholder: (context, url) => const Center(
-                                    child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                )),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                              ),
-                            ),
-                          ),
-                          if (listProduk[index]['status_barang'] == 'HABIS')
-                            Positioned(
-                              top: 2,
-                              right: 1,
-                              child: Container(
-                                color: Theme.of(context).colorScheme.error,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 2),
-                                child: Text(
-                                  listProduk[index]['status_barang'],
-                                  style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onError),
-                                ),
-                              ),
-                            ),
-                          if (listProduk[index]['status_barang'] == 'INDEN')
-                            Positioned(
-                              top: 2,
-                              right: 1,
-                              child: Container(
-                                color: Colors.blue,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 2),
-                                child: Text(
-                                  listProduk[index]['status_barang'],
-                                  style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onError),
-                                ),
-                              ),
-                            ),
-                          if (listProduk[index]['status_barang'] ==
-                              'CALL TO BUY')
-                            Positioned(
-                              top: 2,
-                              right: 1,
-                              child: Container(
-                                color: Theme.of(context).colorScheme.error,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 2),
-                                child: Text(
-                                  listProduk[index]['status_barang'],
-                                  style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary),
-                                ),
-                              ),
-                            ),
-                        ]),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0, vertical: 3),
+                  items: <String>['Terendah', 'Tertinggi']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Expanded(
+          child: FutureBuilder<List<Map>>(
+              future: fetchSearchProduk(widget.query),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final listProduk = snapshot.data!;
+
+                  if (listProduk.isEmpty) {
+                    return const Center(child: Text('Produk tidak ditemukan.'));
+                  }
+
+                  return GridView.count(
+                    // gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    //   crossAxisCount: 2,
+                    // ),
+                    // itemCount: listProduk.length,
+                    mainAxisSpacing: 3,
+                    crossAxisSpacing: 3,
+                    childAspectRatio: 3 / 4,
+                    crossAxisCount: 2,
+                    children: List.generate(
+                      listProduk.length,
+                      (index) => GestureDetector(
+                        onTap: () {
+                          Navigator.of(context)
+                              .push(_createRoute(DetailProductScreen(
+                            productId: int.parse(listProduk[index]['id']),
+                          )));
+                          // CupertinoPageRoute(
+                          //     builder: (_) => DetailProductScreen(
+                          //         productId: int.parse(listProduk[index]['id'])));
+                        },
+                        child: Card(
+                          clipBehavior: Clip.hardEdge,
+                          elevation: 4,
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisSize: MainAxisSize.max,
                             children: [
-                              Text(
-                                listProduk[index]['nama_kategori'],
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText2!
-                                    .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        fontWeight: FontWeight.w600),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                              Text(
-                                listProduk[index]['nama'],
-                                style: Theme.of(context).textTheme.bodyText2,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                              const SizedBox(
-                                height: 4,
-                              ),
-                              Text(
-                                listProduk[index]['harga_rp']
-                                    .replaceAll(',00', ''),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText2!
-                                    .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .error),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
+                              Stack(children: [
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: AspectRatio(
+                                    aspectRatio: 1,
+                                    child: CachedNetworkImage(
+                                      imageUrl: Config().mktToCst(
+                                          listProduk[index]['gambar_kecil']),
+                                      placeholder: (context, url) =>
+                                          const Center(
+                                              child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      )),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(Icons.error),
+                                    ),
+                                  ),
+                                ),
+                                if (listProduk[index]['status_barang'] ==
+                                    'HABIS')
+                                  Positioned(
+                                    top: 2,
+                                    right: 1,
+                                    child: Container(
+                                      color:
+                                          Theme.of(context).colorScheme.error,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 2),
+                                      child: Text(
+                                        listProduk[index]['status_barang'],
+                                        style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onError),
+                                      ),
+                                    ),
+                                  ),
+                                if (listProduk[index]['status_barang'] ==
+                                    'INDEN')
+                                  Positioned(
+                                    top: 2,
+                                    right: 1,
+                                    child: Container(
+                                      color: Colors.blue,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 2),
+                                      child: Text(
+                                        listProduk[index]['status_barang'],
+                                        style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onError),
+                                      ),
+                                    ),
+                                  ),
+                                if (listProduk[index]['status_barang'] ==
+                                    'CALL TO BUY')
+                                  Positioned(
+                                    top: 2,
+                                    right: 1,
+                                    child: Container(
+                                      color:
+                                          Theme.of(context).colorScheme.error,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 2),
+                                      child: Text(
+                                        listProduk[index]['status_barang'],
+                                        style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary),
+                                      ),
+                                    ),
+                                  ),
+                              ]),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0, vertical: 3),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Text(
+                                      listProduk[index]['nama_kategori'],
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText2!
+                                          .copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                              fontWeight: FontWeight.w600),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                    Text(
+                                      listProduk[index]['nama'],
+                                      style:
+                                          Theme.of(context).textTheme.bodyText2,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                    const SizedBox(
+                                      height: 4,
+                                    ),
+                                    Text(
+                                      listProduk[index]['harga_rp']
+                                          .replaceAll(',00', ''),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText2!
+                                          .copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .error),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-              ),
-            );
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        });
+                  );
+                } else {
+                  return const Center(child: CircularProgressIndicator());
+                }
+              }),
+        ),
+      ],
+    );
   }
 
   @override

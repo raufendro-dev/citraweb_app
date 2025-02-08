@@ -101,7 +101,6 @@ class AuthService {
         return true;
       } finally {
         // you can do somethig here
-
       }
     }
     return false;
@@ -130,6 +129,8 @@ class AuthService {
         cartProvider.setJumlahItem(jml);
         cartProvider.setTotalHarga(cart['data'].first['total_harga_barang']);
         cartProvider.setPpn(cart['data'].first['ppn_rp']);
+        cartProvider.setDiskon(cart['data'].first['diskon_rp'].toString());
+
         cartProvider
             .setTotalSebelumOngkir(cart['data'].first['total_sebelum_ongkir']);
         return {

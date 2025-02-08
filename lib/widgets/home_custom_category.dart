@@ -3,24 +3,41 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mikrotik/services/auth_service.dart';
 import 'dart:convert';
 
 import '../constant/config.dart';
 import '../screens/detail_product_screen.dart';
 
-class HomeCustomCategory extends StatelessWidget {
+class HomeCustomCategory extends StatefulWidget {
   HomeCustomCategory({Key? key, required this.createRoute}) : super(key: key);
   final Function createRoute;
 
+  @override
+  State<HomeCustomCategory> createState() => _HomeCustomCategoryState();
+}
+
+class _HomeCustomCategoryState extends State<HomeCustomCategory> {
   final _config = Config();
 
   final List<Map<String, dynamic>> listCustomCategory =
       Config.listCustomCategory;
+  bool sudahLogin = false;
+  cekLogin() async {
+    AuthService().cekLogin(context).then((value) async {
+      if (value) {
+        setState(() {
+          sudahLogin = value;
+        });
+      }
+    });
+  }
 
   Future<List<Map<String, dynamic>>> fetchCustomCategory(String api,
       {int delay = 0}) async {
     return Future.delayed(Duration(seconds: delay), () async {
       final List<Map<String, dynamic>> listCustomCategory = [];
+      print('ini link custom');
       print(Uri.parse(Config.baseUrlApi + api));
       final responseCustomCategory =
           await http.get(Uri.parse(Config.baseUrlApi + api));
@@ -36,6 +53,12 @@ class HomeCustomCategory extends StatelessWidget {
       }
       return listCustomCategory;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    cekLogin();
   }
 
   @override
@@ -430,8 +453,8 @@ class HomeCustomCategory extends StatelessWidget {
                           (index) {
                             return GestureDetector(
                               onTap: () {
-                                Navigator.of(context)
-                                    .push(createRoute(DetailProductScreen(
+                                Navigator.of(context).push(
+                                    widget.createRoute(DetailProductScreen(
                                   productId: int.parse(
                                       customCategory['produk'][index]['id']),
                                 )));
@@ -451,11 +474,14 @@ class HomeCustomCategory extends StatelessWidget {
                                 //                   ['id']),
                                 //         )));
                               },
+                              // child: Text(
+                              //     customCategory['produk'][index].toString()),
                               child: Card(
                                 clipBehavior: Clip.hardEdge,
                                 elevation: 4,
                                 child: Column(
                                   mainAxisSize: MainAxisSize.max,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Stack(children: [
                                       SizedBox(
@@ -478,76 +504,143 @@ class HomeCustomCategory extends StatelessWidget {
                                           ),
                                         ),
                                       ),
-                                      if (customCategory['produk'][index]
-                                              ['status_barang'] ==
-                                          'HABIS')
-                                        Positioned(
-                                          top: 2,
-                                          right: 1,
-                                          child: Container(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .error,
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 2),
-                                            child: Text(
-                                              customCategory['produk'][index]
-                                                  ['status_barang'],
-                                              style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .onError),
-                                            ),
+                                      // if (customCategory['produk'][index]
+                                      //         ['status_barang'] ==
+                                      //     'HABIS')
+                                      //   Positioned(
+                                      //     top: 2,
+                                      //     right: 1,
+                                      //     child: Container(
+                                      //       color: Theme.of(context)
+                                      //           .colorScheme
+                                      //           .error,
+                                      //       padding: const EdgeInsets.symmetric(
+                                      //           horizontal: 2),
+                                      //       child: Text(
+                                      //         customCategory['produk'][index]
+                                      //             ['status_barang'],
+                                      //         style: TextStyle(
+                                      //             color: Theme.of(context)
+                                      //                 .colorScheme
+                                      //                 .onError),
+                                      //       ),
+                                      //     ),
+                                      //   ),
+                                      // if (customCategory['produk'][index]
+                                      //         ['status_barang'] ==
+                                      //     'INDEN')
+                                      //   Positioned(
+                                      //     top: 2,
+                                      //     right: 1,
+                                      //     child: Container(
+                                      //       color: Colors.blue,
+                                      //       padding: const EdgeInsets.symmetric(
+                                      //           horizontal: 2),
+                                      //       child: Text(
+                                      //         "PRE ORDER",
+                                      //         style: TextStyle(
+                                      //             color: Theme.of(context)
+                                      //                 .colorScheme
+                                      //                 .onError),
+                                      //       ),
+                                      //     ),
+                                      //   ),
+                                      // if (customCategory['produk'][index]
+                                      //         ['status_barang'] ==
+                                      //     'CALL TO BUY')
+                                      //   Positioned(
+                                      //     top: 2,
+                                      //     right: 1,
+                                      //     child: Container(
+                                      //       color: Theme.of(context)
+                                      //           .colorScheme
+                                      //           .primary,
+                                      //       padding: const EdgeInsets.symmetric(
+                                      //           horizontal: 2),
+                                      //       child: Text(
+                                      //         customCategory['produk'][index]
+                                      //             ['status_barang'],
+                                      //         style: TextStyle(
+                                      //             color: Theme.of(context)
+                                      //                 .colorScheme
+                                      //                 .onError),
+                                      //       ),
+                                      //     ),
+                                      //   ),
+                                      Positioned(
+                                        top: 2,
+                                        left: 1,
+                                        child: Container(
+                                          color: customCategory['produk'][index]
+                                                      ['app_kiri_atas'] ==
+                                                  ""
+                                              ? Colors.transparent
+                                              : Colors.blue,
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 2),
+                                          child: Text(
+                                            customCategory['produk'][index]
+                                                ['app_kiri_atas'],
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onError),
                                           ),
                                         ),
-                                      if (customCategory['produk'][index]
-                                              ['status_barang'] ==
-                                          'INDEN')
-                                        Positioned(
-                                          top: 2,
-                                          right: 1,
-                                          child: Container(
-                                            color: Colors.blue,
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 2),
-                                            child: Text(
-                                              "PRE ORDER",
-                                              style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .onError),
-                                            ),
+                                      ),
+                                      Positioned(
+                                        top: 2,
+                                        right: 1,
+                                        child: Container(
+                                          color: customCategory['produk'][index]
+                                                      ['app_kanan_atas'] ==
+                                                  ""
+                                              ? Colors.transparent
+                                              : Colors.orange,
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 2),
+                                          child: Text(
+                                            customCategory['produk'][index]
+                                                ['app_kanan_atas'],
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onError),
                                           ),
                                         ),
-                                      if (customCategory['produk'][index]
-                                              ['status_barang'] ==
-                                          'CALL TO BUY')
-                                        Positioned(
-                                          top: 2,
-                                          right: 1,
-                                          child: Container(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 2),
-                                            child: Text(
-                                              customCategory['produk'][index]
-                                                  ['status_barang'],
-                                              style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .onError),
-                                            ),
+                                      ),
+                                      Positioned(
+                                        bottom: 2,
+                                        left: 1,
+                                        child: Container(
+                                          color: customCategory['produk'][index]
+                                                      ['app_kiri_bawah'] ==
+                                                  "OUT OF STOCK"
+                                              ? Colors.orange
+                                              : customCategory['produk'][index]
+                                                          ['app_kiri_bawah'] ==
+                                                      "PRE ORDER"
+                                                  ? Colors.green
+                                                  : Colors.transparent,
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 2),
+                                          child: Text(
+                                            customCategory['produk'][index]
+                                                ['app_kiri_bawah'],
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onError),
                                           ),
                                         ),
+                                      ),
                                     ]),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8.0, vertical: 4),
                                       child: Column(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
+                                            CrossAxisAlignment.start,
                                         children: [
                                           // Text(
                                           //   customCategory['produk'][index]
@@ -578,26 +671,140 @@ class HomeCustomCategory extends StatelessWidget {
                                           const SizedBox(
                                             height: 4,
                                           ),
-                                          customCategory['produk'][index]
-                                                      ['harga_rp'] !=
-                                                  "0"
-                                              ? Text(
-                                                  customCategory['produk']
+                                          Container(
+                                            color: customCategory['produk']
+                                                            [index][
+                                                        'app_txt_ganti_harga'] ==
+                                                    "DISCONTINUED"
+                                                ? Colors.grey
+                                                : customCategory['produk'][index][
+                                                            'app_txt_ganti_harga'] ==
+                                                        "CALL TO BUY"
+                                                    ? Colors.black
+                                                    : customCategory['produk']
+                                                                        [index][
+                                                                    'app_txt_ganti_harga'] ==
+                                                                "LOGIN TO CHECK PRICE" &&
+                                                            sudahLogin == false
+                                                        ? Colors.yellow
+                                                        : customCategory['produk']
+                                                                            [index]
+                                                                        ['app_txt_ganti_harga'] ==
+                                                                    "LOGIN TO CHECK PRICE" &&
+                                                                sudahLogin == true
+                                                            ? Colors.transparent
+                                                            : Colors.transparent,
+                                            child: Text(
+                                              customCategory['produk'][index][
+                                                          'app_txt_ganti_harga'] ==
+                                                      ""
+                                                  ? customCategory['produk']
+                                                      [index]['harga_rp']
+                                                  : customCategory['produk']
+                                                                      [index][
+                                                                  'app_txt_ganti_harga'] ==
+                                                              "LOGIN TO CHECK PRICE" &&
+                                                          sudahLogin == true
+                                                      ? customCategory['produk']
                                                           [index]['harga_rp']
-                                                      .replaceAll(',00', ''),
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyText2!
-                                                      .copyWith(
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .error),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  maxLines: 1,
-                                                )
-                                              : Container()
+                                                      : customCategory['produk']
+                                                              [index][
+                                                          'app_txt_ganti_harga'],
+                                              style: TextStyle(
+                                                  color: customCategory[
+                                                                      'produk'][
+                                                                  index][
+                                                              'app_txt_ganti_harga'] ==
+                                                          "DISCONTINUED"
+                                                      ? Colors.black
+                                                      : customCategory['produk']
+                                                                      [index][
+                                                                  'app_txt_ganti_harga'] ==
+                                                              "CALL TO BUY"
+                                                          ? Colors.white
+                                                          : customCategory['produk']
+                                                                          [
+                                                                          index]
+                                                                      [
+                                                                      'app_txt_ganti_harga'] ==
+                                                                  "LOGIN TO CHECK PRICE"
+                                                              ? Colors.black
+                                                              : Colors.black),
+                                            ),
+                                          )
+
+                                          // Container(
+                                          //   padding: const EdgeInsets.symmetric(
+                                          //       horizontal: 2),
+                                          //   color: customCategory['produk']
+                                          //                   [index][
+                                          //               'app_txt_ganti_harga'] ==
+                                          //           "DISCONTINUED"
+                                          //       ? Colors.grey
+                                          //       : customCategory['produk']
+                                          //                       [index][
+                                          //                   'app_txt_ganti_harga'] ==
+                                          //               "CALL TO BUY"
+                                          //           ? Colors.black
+                                          //           : customCategory['produk']
+                                          //                           [index][
+                                          //                       'app_txt_ganti_harga'] ==
+                                          //                   "LOGIN TO CHECK PRICE"
+                                          //               ? Colors.yellow
+                                          //               : Colors.transparent,
+                                          //   child: Text(
+                                          //     customCategory['produk'][index][
+                                          //                 'app_txt_ganti_harga'] ==
+                                          //             ""
+                                          //         ? customCategory['produk']
+                                          //             [index]['harga_rp']
+                                          //         : customCategory['produk']
+                                          //                 [index]
+                                          //             ['app_txt_ganti_harga'],
+                                          //     style: Theme.of(context)
+                                          //         .textTheme
+                                          //         .bodyText2!
+                                          //         .copyWith(
+                                          //             color: customCategory['produk']
+                                          //                             [index][
+                                          //                         'app_txt_ganti_harga'] ==
+                                          //                     "DISCONTINUED"
+                                          //                 ? Colors.black
+                                          //                 : customCategory['produk']
+                                          //                                 [index]
+                                          //                             [
+                                          //                             'app_txt_ganti_harga'] ==
+                                          //                         "CALL TO BUY"
+                                          //                     ? Colors.white
+                                          //                     : snapshot.data![index]
+                                          //                                 [
+                                          //                                 'app_txt_ganti_harga'] ==
+                                          //                             "LOGIN TO CHECK PRICE"
+                                          //                         ? Colors.black
+                                          //                         : Colors
+                                          //                             .black),
+                                          //   ),
+                                          // )
+                                          // customCategory['produk'][index]
+                                          //             ['harga_rp'] !=
+                                          //         "0"
+                                          //     ? Text(
+                                          //         customCategory['produk']
+                                          //                 [index]['harga_rp']
+                                          //             .replaceAll(',00', ''),
+                                          //         style: Theme.of(context)
+                                          //             .textTheme
+                                          //             .bodyText2!
+                                          //             .copyWith(
+                                          //                 color:
+                                          //                     Theme.of(context)
+                                          //                         .colorScheme
+                                          //                         .error),
+                                          //         overflow:
+                                          //             TextOverflow.ellipsis,
+                                          //         maxLines: 1,
+                                          //       )
+                                          //     : Container()
                                         ],
                                       ),
                                     ),

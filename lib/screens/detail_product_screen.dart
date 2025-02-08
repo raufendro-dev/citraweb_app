@@ -80,6 +80,17 @@ class _DetailProductScreenState extends State<DetailProductScreen>
     return false;
   }
 
+  bool sudahLogin = false;
+  cekLogin() async {
+    AuthService().cekLogin(context).then((value) async {
+      if (value) {
+        setState(() {
+          sudahLogin = value;
+        });
+      }
+    });
+  }
+
   var namabuatwa = "";
   var adavariant = false;
   List<String> variantNames = [];
@@ -94,6 +105,10 @@ class _DetailProductScreenState extends State<DetailProductScreen>
           'app-api/produk/detail/?id=${widget.productId}&key=0cc7da679bea04fea453c8062e06514d');
       if (responseProdukDetail.statusCode == 200) {
         final Map produkDetail = jsonDecode(responseProdukDetail.body);
+        print("cook");
+        print(Config.baseUrlApi +
+            'app-api/produk/detail/?id=${widget.productId}&key=0cc7da679bea04fea453c8062e06514d');
+        print(produkDetail);
         if (produkDetail['data'].isNotEmpty) {
           for (var detail in produkDetail['data']) {
             listProdukDetail.add(detail);
@@ -149,6 +164,7 @@ class _DetailProductScreenState extends State<DetailProductScreen>
   @override
   void initState() {
     super.initState();
+    cekLogin();
     futureProdukDetail = fetchProdukDetail();
 
     futureProdukLainnya = futureProdukDetail.then((value) {
@@ -281,18 +297,32 @@ class _DetailProductScreenState extends State<DetailProductScreen>
                         const SizedBox(
                           height: 6,
                         ),
-                        detail['harga_rp'] != "0"
-                            ? Text(
-                                detail['harga_rp'].replaceAll(',00', ''),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline6!
-                                    .copyWith(
-                                        color: Theme.of(context).primaryColor),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
+                        detail['app_txt_ganti_harga'] ==
+                                    "LOGIN TO CHECK PRICE" &&
+                                sudahLogin == false
+                            ? Container(
+                                color: Colors.yellow,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 2),
+                                child: Text(detail['app_txt_ganti_harga'],
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyText2!
+                                        .copyWith(color: Colors.black)),
                               )
-                            : Container(),
+                            : detail['harga_rp'] != "0"
+                                ? Text(
+                                    detail['harga_rp'].replaceAll(',00', ''),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline6!
+                                        .copyWith(
+                                            color:
+                                                Theme.of(context).primaryColor),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  )
+                                : Container(),
                         const SizedBox(
                           height: 6,
                         ),
@@ -386,13 +416,18 @@ class _DetailProductScreenState extends State<DetailProductScreen>
                               style: TextButton.styleFrom(
                                   padding: EdgeInsets.zero),
                               onPressed: () async {
-                                if (await canLaunch(detail['brosur'])) {
-                                  await launch(
-                                    detail['brosur'],
-                                  );
-                                } else {
-                                  throw 'Could not launch ${detail['brosur']}';
-                                }
+                                print(detail['brosur']);
+                                await launchUrl(
+                                    Uri.parse(Config.baseUrlApi +
+                                        "/brosur/?id=${widget.productId}"),
+                                    mode: LaunchMode.externalApplication);
+                                // if (await canLaunch(detail['brosur'])) {
+                                //   await launch(
+                                //     detail['brosur'],
+                                //   );
+                                // } else {
+                                //   throw 'Could not launch ${detail['brosur']}';
+                                // }
                               },
                               label: const Text('Download Brosur'),
                               icon: const Icon(Icons.download),
@@ -699,7 +734,7 @@ class _DetailProductScreenState extends State<DetailProductScreen>
                                                           .colorScheme
                                                           .error,
                                                       padding: const EdgeInsets
-                                                              .symmetric(
+                                                          .symmetric(
                                                           horizontal: 2),
                                                       child: Text(
                                                         snapshot.data![index]
@@ -721,7 +756,7 @@ class _DetailProductScreenState extends State<DetailProductScreen>
                                                     child: Container(
                                                       color: Colors.blue,
                                                       padding: const EdgeInsets
-                                                              .symmetric(
+                                                          .symmetric(
                                                           horizontal: 2),
                                                       child: Text(
                                                         "PRE ORDER",
@@ -744,7 +779,7 @@ class _DetailProductScreenState extends State<DetailProductScreen>
                                                           .colorScheme
                                                           .primary,
                                                       padding: const EdgeInsets
-                                                              .symmetric(
+                                                          .symmetric(
                                                           horizontal: 2),
                                                       child: Text(
                                                         snapshot.data![index]
@@ -955,7 +990,7 @@ class _DetailProductScreenState extends State<DetailProductScreen>
                                                             Padding(
                                                               padding:
                                                                   const EdgeInsets
-                                                                          .only(
+                                                                      .only(
                                                                       top: 10),
                                                               child: Center(
                                                                 child: Text(
@@ -1083,7 +1118,14 @@ class _DetailProductScreenState extends State<DetailProductScreen>
                                   ? null
                                   : snapshot.data!.first['status_barang'] ==
                                           'CALL TO BUY'
-                                      ? null
+                                      ? () async {
+                                          var link = Config.baseUrlApi +
+                                              'app-api/produk/detail/?id=${widget.productId}&key=0cc7da679bea04fea453c8062e06514d';
+                                          String url =
+                                              "https://wa.me/+628112039555/?text=Hallo%20Sales%20Citraweb%2C%0ANama%20%3A%0APerusahaan%20%3A%0AApakah%20saya%20bisa%20mendapatkan%20informasi%20harga%20untuk%20produk%20berikut%0A" +
+                                                  link;
+                                          launch(url);
+                                        }
                                       : () async {
                                           if (adavariant == false) {
                                             print('belisekarang');
@@ -1161,7 +1203,7 @@ class _DetailProductScreenState extends State<DetailProductScreen>
                                                             Padding(
                                                               padding:
                                                                   const EdgeInsets
-                                                                          .only(
+                                                                      .only(
                                                                       top: 10),
                                                               child: Center(
                                                                 child: Text(
@@ -1219,24 +1261,38 @@ class _DetailProductScreenState extends State<DetailProductScreen>
                                                                 Navigator.of(
                                                                         context)
                                                                     .pop();
-                                                                if (await addToCart()) {
-                                                                  print("go");
-                                                                  // authService.fetchCart(context).then(
-                                                                  //   (value) {
-                                                                  Navigator.push(
-                                                                      context,
-                                                                      MaterialPageRoute<void>(
-                                                                        builder:
-                                                                            (BuildContext context) =>
-                                                                                const ShopingCartScreen(),
-                                                                      ));
-                                                                  //   return value;
-                                                                  // },
-                                                                  // );
-                                                                  cartProvider
-                                                                      .plushItem();
-                                                                  // print(cartProvider.jumlahItem);
-                                                                }
+
+                                                                // Navigator.pop(
+                                                                //     context);
+                                                                // Navigator.pushNamed(
+                                                                //     context,
+                                                                //     ShopingCartScreen
+                                                                //         .routeName);
+
+                                                                // Future.delayed(
+                                                                //     Duration
+                                                                //         .zero,
+                                                                //     () {
+
+                                                                // });
+                                                                // Navigator.pushNamed(
+                                                                //     context,
+                                                                //     ShopingCartScreen
+                                                                //         .routeName);
+                                                                // authService.fetchCart(context).then(
+                                                                //   (value) {
+                                                                // Navigator.push(
+                                                                //     context,
+                                                                //     MaterialPageRoute<void>(
+                                                                //       builder:
+                                                                //           (BuildContext context) =>
+                                                                //               const ShopingCartScreen(),
+                                                                //     ));
+                                                                //   return value;
+                                                                // },
+                                                                // );
+
+                                                                // print(cartProvider.jumlahItem);
                                                               },
                                                               child: Text(
                                                                   'Lanjutkan'),
@@ -1246,6 +1302,17 @@ class _DetailProductScreenState extends State<DetailProductScreen>
                                                       );
                                                     },
                                                   );
+                                                },
+                                              ).then(
+                                                (value) async {
+                                                  if (await addToCart()) {
+                                                    cartProvider.plushItem();
+                                                    print("go");
+                                                    Navigator.pushNamed(
+                                                        context,
+                                                        ShopingCartScreen
+                                                            .routeName);
+                                                  }
                                                 },
                                               );
                                               //=======================
@@ -1477,13 +1544,15 @@ class Selengkapnya extends StatelessWidget {
               onLinkTap: (String? url, RenderContext context,
                   Map<String, String> attributes, dom.Element? element) async {
                 //open URL in webview, or launch URL in browser, or any other logic here
-                if (await canLaunch(url!)) {
-                  await launch(
-                    url,
-                  );
-                } else {
-                  throw 'Could not launch $url';
-                }
+                await launchUrl(Uri.parse(url!),
+                    mode: LaunchMode.externalApplication);
+                // if (await canLaunch(url!)) {
+                //   await launch(
+                //     url,
+                //   );
+                // } else {
+                //   throw 'Could not launch $url';
+                // }
               },
             ),
           ],

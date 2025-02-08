@@ -67,13 +67,15 @@ class PageScreen extends StatelessWidget {
                     url = Config.baseUrlApi + url;
                     url = url.replaceAll('//', '/');
                   }
-                  if (await canLaunch(url)) {
-                    await launch(
-                      url,
-                    );
-                  } else {
-                    throw 'Could not launch $url';
-                  }
+                  await launchUrl(Uri.parse(url),
+                      mode: LaunchMode.externalApplication);
+                  // if (await canLaunch(url)) {
+                  //   await launch(
+                  //     url,
+                  //   );
+                  // } else {
+                  //   throw 'Could not launch $url';
+                  // }
                 },
               )),
             ),

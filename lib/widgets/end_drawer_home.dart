@@ -530,7 +530,7 @@ class _EndDrawerHomeState extends State<EndDrawerHome> {
                     ),
                     horizontalTitleGap: 0,
                     title: Text(
-                      'Pusat Bantuan',
+                      'Hubungi Kami',
                       style: TextStyle(
                         color: Colors.grey.shade800,
                         fontSize: 14,
@@ -545,8 +545,11 @@ class _EndDrawerHomeState extends State<EndDrawerHome> {
                     ),
                     onTap: () {
                       // Navigator.pop(context);
-                      Navigator.of(context).push(_createRoute(
-                          const KontakScreen(), slideDirection.toLeft));
+                      String url =
+                          "https://wa.me/+628112039555/?text=%20Halo%20Citraweb%2C%0A%20Nama%20%3A%20%0A%20Perusahaan%20%3A%20%0A%20Pertanyaan%20%3A%20";
+                      launch(url);
+                      // Navigator.of(context).push(_createRoute(
+                      //     const KontakScreen(), slideDirection.toLeft));
                     },
                   ),
                   if (profileProvider.isLogin)
@@ -563,6 +566,7 @@ class _EndDrawerHomeState extends State<EndDrawerHome> {
                               if (isLogout) {
                                 cartProvider.resetCart();
                                 profileProvider.setIsLogin(false);
+                                profileProvider.profile.clear();
 
                                 Navigator.of(context).pushNamedAndRemoveUntil(
                                   HomePageScreen.routeName,

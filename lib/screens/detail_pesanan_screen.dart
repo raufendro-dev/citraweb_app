@@ -656,14 +656,18 @@ class _DetailPesananScreenState extends State<DetailPesananScreen> {
                                   horizontal: 12, vertical: 2.0),
                               child: ElevatedButton(
                                 onPressed: () async {
-                                  if (await canLaunch(
-                                      detailOrder['dokumen_invoice_url'])) {
-                                    await launch(
-                                      detailOrder['dokumen_invoice_url'],
-                                    );
-                                  } else {
-                                    throw 'Could not launch ${detailOrder['dokumen_invoice_url']}';
-                                  }
+                                  await launchUrl(
+                                      Uri.parse(
+                                          detailOrder['dokumen_invoice_url']),
+                                      mode: LaunchMode.externalApplication);
+                                  // if (await canLaunch(
+                                  //     detailOrder['dokumen_invoice_url'])) {
+                                  //   await launch(
+                                  //     detailOrder['dokumen_invoice_url'],
+                                  //   );
+                                  // } else {
+                                  //   throw 'Could not launch ${detailOrder['dokumen_invoice_url']}';
+                                  // }
                                 },
                                 child: Text(detailOrder['dokumen_invoice']),
                               ),
@@ -674,14 +678,18 @@ class _DetailPesananScreenState extends State<DetailPesananScreen> {
                                   horizontal: 12, vertical: 2.0),
                               child: ElevatedButton(
                                 onPressed: () async {
-                                  if (await canLaunch(
-                                      detailOrder['dokumen_proforma_url'])) {
-                                    await launch(
-                                      detailOrder['dokumen_proforma_url'],
-                                    );
-                                  } else {
-                                    throw 'Could not launch ${detailOrder['dokumen_proforma_url']}';
-                                  }
+                                  await launchUrl(
+                                      Uri.parse(
+                                          detailOrder['dokumen_proforma_url']),
+                                      mode: LaunchMode.externalApplication);
+                                  // if (await canLaunch(
+                                  //     detailOrder['dokumen_proforma_url'])) {
+                                  //   await launch(
+                                  //     detailOrder['dokumen_proforma_url'],
+                                  //   );
+                                  // } else {
+                                  //   throw 'Could not launch ${detailOrder['dokumen_proforma_url']}';
+                                  // }
                                 },
                                 child: Text(detailOrder['dokumen_proforma']),
                               ),
@@ -692,14 +700,18 @@ class _DetailPesananScreenState extends State<DetailPesananScreen> {
                                   horizontal: 12, vertical: 2.0),
                               child: ElevatedButton(
                                 onPressed: () async {
-                                  if (await canLaunch(
-                                      detailOrder['dokumen_quotation_url'])) {
-                                    await launch(
-                                      detailOrder['dokumen_quotation_url'],
-                                    );
-                                  } else {
-                                    throw 'Could not launch ${detailOrder['dokumen_quotation_url']}';
-                                  }
+                                  await launchUrl(
+                                      Uri.parse(
+                                          detailOrder['dokumen_quotation_url']),
+                                      mode: LaunchMode.externalApplication);
+                                  // if (await canLaunch(
+                                  //     detailOrder['dokumen_quotation_url'])) {
+                                  //   await launch(
+                                  //     detailOrder['dokumen_quotation_url'],
+                                  //   );
+                                  // } else {
+                                  //   throw 'Could not launch ${detailOrder['dokumen_quotation_url']}';
+                                  // }
                                 },
                                 child: Text(detailOrder['dokumen_quotation']),
                               ),
@@ -710,14 +722,18 @@ class _DetailPesananScreenState extends State<DetailPesananScreen> {
                                   horizontal: 12, vertical: 2.0),
                               child: ElevatedButton(
                                 onPressed: () async {
-                                  if (await canLaunch(detailOrder[
-                                      'download_detail_produk_url'])) {
-                                    await launch(
-                                      detailOrder['download_detail_produk_url'],
-                                    );
-                                  } else {
-                                    throw 'Could not launch ${detailOrder['download_detail_produk_url']}';
-                                  }
+                                  await launchUrl(
+                                      Uri.parse(detailOrder[
+                                          'download_detail_produk_url']),
+                                      mode: LaunchMode.externalApplication);
+                                  // if (await canLaunch(detailOrder[
+                                  //     'download_detail_produk_url'])) {
+                                  //   await launch(
+                                  //     detailOrder['download_detail_produk_url'],
+                                  //   );
+                                  // } else {
+                                  //   throw 'Could not launch ${detailOrder['download_detail_produk_url']}';
+                                  // }
                                 },
                                 child:
                                     Text(detailOrder['download_detail_produk']),

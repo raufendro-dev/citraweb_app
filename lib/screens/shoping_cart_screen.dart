@@ -57,14 +57,19 @@ class _ShopingCartScreenState extends State<ShopingCartScreen> {
     required String varian,
     required int qty,
   }) async {
-    print({
+    print(jsonEncode({
       "key": "0cc7da679bea04fea453c8062e06514d",
       "iduser": await auth.idUser,
       "sess_id": await auth.sessId,
       "data_barang": [
-        {"id": idCart, "idbarang": idBarang, "jum_barang": qty}
+        {
+          "id": idCart,
+          "idbarang": idBarang,
+          "jum_barang": qty,
+          "varian": varian
+        }
       ]
-    });
+    }));
     if (qty > 20) {
       return false;
     }
@@ -519,8 +524,7 @@ class _ShopingCartScreenState extends State<ShopingCartScreen> {
                                                     ),
                                                     keyboardType:
                                                         TextInputType.number,
-                                                    inputFormatters: <
-                                                        TextInputFormatter>[
+                                                    inputFormatters: <TextInputFormatter>[
                                                       FilteringTextInputFormatter
                                                           .digitsOnly
                                                     ],
@@ -551,13 +555,13 @@ class _ShopingCartScreenState extends State<ShopingCartScreen> {
                                                                   .text) +
                                                           1;
                                                       print('+');
-                                                      if (qty > 20) {
-                                                        qty = 20;
+                                                      if (qty > 100) {
+                                                        qty = 100;
                                                         qtyController.text =
                                                             qty.toString();
                                                         Fluttertoast.showToast(
                                                             msg:
-                                                                'Maksimal qty per item 20',
+                                                                'Maksimal qty per item 100',
                                                             toastLength: Toast
                                                                 .LENGTH_LONG,
                                                             gravity:
@@ -708,7 +712,19 @@ class _ShopingCartScreenState extends State<ShopingCartScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('PPN 10%'),
+                        const Text('Diskon'),
+                        Consumer<CartProvider>(builder: (context, cart, child) {
+                          return Text(
+                            'Rp ' + cart.diskon,
+                            style: Theme.of(context).textTheme.bodyText2,
+                          );
+                        }),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('PPN 11%'),
                         Consumer<CartProvider>(builder: (context, cart, child) {
                           return Text(
                             'Rp ' + cart.ppn,
